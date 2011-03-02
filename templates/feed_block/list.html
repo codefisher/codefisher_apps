@@ -1,0 +1,8 @@
+{% load core %}
+<h3>{{ title }}</h3>
+
+<ul>
+{% for item in items %}
+    <li><a href="{{ item.link }}">{{ item.title|truncatechars:30 }}</a></li>
+{% endfor %}
+</ul>
