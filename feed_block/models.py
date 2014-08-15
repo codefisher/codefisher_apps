@@ -27,10 +27,12 @@ class FeedBlock(PageBlock):
 
 
     def content(self, context):
-        fp = urllib2.urlopen(self.feed_url)
-        dom = xml.dom.minidom.parse(fp)
-        fp.close()
-
+        try:
+            fp = urllib2.urlopen(self.feed_url)
+            dom = xml.dom.minidom.parse(fp)
+            fp.close()
+        except urllib2.URLError:
+            return "Can not open %s" % self.feed_url
         item_nodes = dom.getElementsByTagName("item")
         items = []
         for node in item_nodes:

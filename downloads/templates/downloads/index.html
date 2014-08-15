@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load djangopress_tags %}
+
+{% block content %}
+{% if subfolders or folder %}
+<h2>Folders</h2>
+<table>
+  <tr>
+    <th>Folder</th>
+    <th>Home Page</th>
+  </tr>
+  {% if folder.parent %}
+    <tr>
+      <td><a href="{{ folder.parent.get_absolute_url }}">{{ subfolder.title }}</a> - Parent Folder</td>
+      <td><a href="{{ folder.parent.homepage }}">Home Page</a></td>
+    </tr>
+  {% else %}
+    {% if folder %}
+    <tr>
+      <td><a href="../">Downloads</a> - Parent Folder</td>
+      <td></td>
+    </tr>
+    {% endif %}
+  {% endif %}
+  {% for subfolder in subfolders %}
+    <tr>
+      <td><a href="{{ subfolder.get_absolute_url }}">{{ subfolder.title }}</a></td>
+      <td><a href="{{ subfolder.homepage }}">Home Page</a></td>
+    </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if downloads %}
+<h2>Download Files</h2>
+<table>
+  <tr>
+    <th>File</th>
+    <th>Size</th>
+    <th>Version</th>
+    <th>Home Page</th>
+  </tr>
+  {% for download in downloads %}
+    <tr>
+      <td><a href="{{ download.get_absolute_url }}">{{ download.file_name }}</a></td>
+      <td>{{ download.file_size|filesizeformat }}</td>
+      <td><a href="{{ download.get_release_url }}">{{ download.version }}</a> {% if download == folder.latest %} <img src="{% media_url %}images/pastel-svg/16/star.png" alt="latest"> {% endif %}</td>
+      <td><a href="{{ download.group.homepage }}">{{ download.title }}</a></td>
+    </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}
