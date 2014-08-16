@@ -2,6 +2,9 @@ from django.http import Http404
 from django.conf import settings
 import httplib2
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
 
 PROXY_FORMAT = u'http://%s:%d%s' % ("127.0.0.1", 8081, u'%s')
 
@@ -23,17 +26,25 @@ class PagesMiddleware(object):
 def proxy_page(request):
     conn = httplib2.Http()
     url = request.path
+    headers = dict((header.lstrip('HTTP_'), value) for (header, value) 
+       in request.META.items() if header.startswith('HTTP_'))
+    headers["x-internal-from-new"] = "yes"
     try:
         if request.method == 'GET':
             url_ending = '%s?%s' % (url, request.GET.urlencode())
             url = PROXY_FORMAT % url_ending
-            response, content = conn.request(url, request.method, headers={'x-internal-from-new':'yes'})
+            response, content = conn.request(url, request.method, headers=headers)
         elif request.method == 'POST':
+            headers['Content-type'] = 'application/x-www-form-urlencoded'
             url = PROXY_FORMAT % url
             data = request.POST.urlencode()
-            response, content = conn.request(url, request.method, data, headers={'x-internal-from-new':'yes'})
+            response, content = conn.request(url, request.method, data, headers=headers)
     except:
-        raise Http404 # something went wrong we did not get a page
+	raise 
     if int(response['status']) == 404:
         raise Http404
+    if response.get("x-page-title"):
+        data = {"page_content": content, "title": response.get("x-page-title")}
+        return render_to_response("base.html", data,
+                context_instance=RequestContext(request))
     return HttpResponse(content, status=int(response['status']), mimetype=response['content-type'])
