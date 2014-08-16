@@ -40,7 +40,7 @@ def proxy_page(request):
             data = request.POST.urlencode()
             response, content = conn.request(url, request.method, data, headers=headers)
     except:
-	raise 
+        raise Http404
     if int(response['status']) == 404:
         raise Http404
     if response.get("x-page-title"):
