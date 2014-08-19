@@ -2,8 +2,7 @@ from django.http import Http404
 from django.conf import settings
 import httplib2
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 
 
 PROXY_FORMAT = u'http://%s:%d%s' % ("127.0.0.1", 8081, u'%s')
@@ -45,6 +44,5 @@ def proxy_page(request):
         raise Http404
     if response.get("x-page-title"):
         data = {"page_content": content, "title": response.get("x-page-title")}
-        return render_to_response("base.html", data,
-                context_instance=RequestContext(request))
+        return render(request, "base.html", data)
     return HttpResponse(content, status=int(response['status']), mimetype=response['content-type'])

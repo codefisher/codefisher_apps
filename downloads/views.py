@@ -1,6 +1,5 @@
 from models import DownloadGroup, Download
-from django.shortcuts import Http404, render_to_response, redirect
-from django.template import RequestContext
+from django.shortcuts import Http404, render, redirect
 from django.conf import settings
 from django.http import HttpResponse
 
@@ -23,8 +22,7 @@ def release_notes(request, path, version,
     data = {
         "download": download,
     }
-    return render_to_response(template_name, data,
-            context_instance=RequestContext(request))
+    return render(request, template_name, data)
 
 def file_listing(request, path, template_name="downloads/index.html"):
     path_parts = path.split("/")
@@ -43,8 +41,7 @@ def file_listing(request, path, template_name="downloads/index.html"):
             "subfolders": subfolders,
             "downloads": downloads,
         }
-        return render_to_response(template_name, data,
-                context_instance=RequestContext(request))
+        return render(request, template_name, data)
     else:
         folder = None
         for part in path_parts[:-1]:

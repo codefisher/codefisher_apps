@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load djangopress_tags %}
+
+
+{% block doctype %}{% endblock %}
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% media_url %}themes/default/download.css" />
+{% endblock %}
+
+{% block page_title %}
+        <xsl:text>Svn Repository :: </xsl:text>
+        <xsl:value-of select="/svn/index/@base"/>
+        <xsl:value-of select="/svn/index/@path"/>
+{% endblock %}
+
+{% block content %}
+    <h2><xsl:value-of select="/svn/index/@base"/> 
+         - Revision <xsl:value-of select="/svn/index/@rev"/>: 
+        <xsl:value-of select="/svn/index/@path"/></h2>
+    <ul>
+      <li class="directory-up"><a href="..">..</a></li>
+      <xsl:for-each select="/svn/index/dir">
+        <li class="directory">
+            <xsl:element name="a">
+            <xsl:attribute name="href"><xsl:value-of select="@href" /></xsl:attribute>
+            <xsl:value-of select="@name" />
+            </xsl:element>
+        </li>
+      </xsl:for-each>
+      <xsl:for-each select="/svn/index/file">
+        
+        <xsl:element name="li">
+        <xsl:attribute name="class">directory-file directory-file-<xsl:value-of select="substring-after(@href,'.')" /></xsl:attribute>
+        <xsl:element name="a">
+        <xsl:attribute name="href"><xsl:value-of select="@href" /></xsl:attribute>
+        <xsl:value-of select="@name" />
+        </xsl:element>
+        </xsl:element>
+      </xsl:for-each>
+     </ul>
+{% endblock %}
