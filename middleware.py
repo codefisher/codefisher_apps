@@ -6,6 +6,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.middleware.cache import UpdateCacheMiddleware
 from django.utils.cache import patch_response_headers, get_max_age, has_vary_header
+from django.core.cache import cache
 
 class PagesMiddleware(object):
     """This is for checking the old site, so to load pages from there """
@@ -65,13 +66,13 @@ class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
 
     def process_response(self, request, response):
         """Sets the cache, if needed."""
-        if not self._should_update_cache(request, response):
-            # We don't need to update the cache, just return.
-            return response
+        #if not self._should_update_cache(request, response):
+        #    # We don't need to update the cache, just return.
+        #    return response
 
         if response.streaming or response.status_code != 200:
             return response
-
+        
         # Don't cache responses that set a user-specific (and maybe security
         # sensitive) cookie in response to a cookie-less request.
         if not request.COOKIES and response.cookies and has_vary_header(response, 'Cookie'):
@@ -89,10 +90,11 @@ class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
         patch_response_headers(response, timeout)
         if timeout:
             cache_key = "%s-%s" % (self.key_prefix, request.get_full_path())
+            #raise ValueError(cache_key)
             if hasattr(response, 'render') and callable(response.render):
                 response.add_post_render_callback(
                     lambda r: self.cache.set(cache_key, r, timeout)
                 )
             else:
-                self.cache.set(cache_key, response, timeout)
+                cache._cache.set(cache_key.encode("utf-8"), response.content, timeout)
         return response
