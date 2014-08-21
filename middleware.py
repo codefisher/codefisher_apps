@@ -1,11 +1,11 @@
-from django.http import Http404
-from django.conf import settings
 import httplib2
-from django.http import HttpResponse
-from django.shortcuts import render
 import re
-from django.core.cache import cache
-from django.utils.cache import patch_response_headers, get_max_age
+
+from django.conf import settings
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
+from django.middleware.cache import UpdateCacheMiddleware
+from django.utils.cache import patch_response_headers, get_max_age, has_vary_header
 
 class PagesMiddleware(object):
     """This is for checking the old site, so to load pages from there """
@@ -51,7 +51,7 @@ class PagesMiddleware(object):
         return HttpResponse(content, status=int(response['status']), mimetype=response['content-type'])
     
     
-class UpdateCacheMiddleware(object):
+class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
     """
     Response-phase cache middleware that updates the cache if the response is
     cacheable.
@@ -62,24 +62,21 @@ class UpdateCacheMiddleware(object):
     
     THIS IS A PATCHED VERSION OF WHAT IS IN DJANGO TO NGINX CAN GET THE PAGES OUT EASY
     """
-    def __init__(self):
-        self.cache_timeout = settings.CACHE_MIDDLEWARE_SECONDS
-        self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
-        self.cache_anonymous_only = getattr(settings, 'CACHE_MIDDLEWARE_ANONYMOUS_ONLY', False)
 
     def process_response(self, request, response):
         """Sets the cache, if needed."""
-        if not hasattr(request, '_cache_update_cache') or not request._cache_update_cache:
+        if not self._should_update_cache(request, response):
             # We don't need to update the cache, just return.
             return response
-        if request.method != 'GET':
-            # This is a stronger requirement than above. It is needed
-            # because of interactions between this middleware and the
-            # HTTPMiddleware, which throws the body of a HEAD-request
-            # away before this middleware gets a chance to cache it.
+
+        if response.streaming or response.status_code != 200:
             return response
-        if not response.status_code == 200:
+
+        # Don't cache responses that set a user-specific (and maybe security
+        # sensitive) cookie in response to a cookie-less request.
+        if not request.COOKIES and response.cookies and has_vary_header(response, 'Cookie'):
             return response
+
         # Try to get the timeout from the "max-age" section of the "Cache-
         # Control" header before reverting to using the default cache_timeout
         # length.
@@ -92,5 +89,10 @@ class UpdateCacheMiddleware(object):
         patch_response_headers(response, timeout)
         if timeout:
             cache_key = "%s-%s" % (self.key_prefix, request.get_full_path())
-            cache.set(cache_key, response, timeout)
+            if hasattr(response, 'render') and callable(response.render):
+                response.add_post_render_callback(
+                    lambda r: self.cache.set(cache_key, r, timeout)
+                )
+            else:
+                self.cache.set(cache_key, response, timeout)
         return response
