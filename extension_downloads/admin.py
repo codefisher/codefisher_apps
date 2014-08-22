@@ -10,6 +10,7 @@ class DownloadForm(forms.ModelForm):
 
     class Meta:
         model = ExtensionDownload
+        fields = "__all__"
 
 class DownloadAdmin(admin.ModelAdmin):
     fields = ("file", "release_notes", "group", "set_as_latest")

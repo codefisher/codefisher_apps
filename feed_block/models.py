@@ -52,6 +52,7 @@ class FeedForm(forms.ModelForm):
     template = None
 
     class Meta:
+        fields = ("template_name", "feed_url", "feed_type")
         model = FeedBlock
         widgets = {
             'block_name': forms.HiddenInput()

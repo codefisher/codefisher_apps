@@ -7,6 +7,7 @@ class DownloadForm(forms.ModelForm):
 
     class Meta:
         model = Download
+        fields = "__all__"
 
 class DownloadAdmin(admin.ModelAdmin):
     form = DownloadForm
