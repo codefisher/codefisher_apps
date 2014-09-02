@@ -1,12 +1,7 @@
-
 import datetime
 from django.db import models
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import Site
-from django.core.files.storage import FileSystemStorage
-
-fs = FileSystemStorage(location=settings.DOWNLOADS_UPLOAD_FOLDER, base_url="download")
 
 class DownloadGroup(models.Model):
     parent = models.ForeignKey("DownloadGroup", null=True, blank=True)
@@ -47,12 +42,13 @@ class DownloadGroup(models.Model):
             return parts
         
 def upload_path(instance, filename):
-    return "download/%s/%s" % (instance.group.slug, filename)
+    # the [1:] removes the first /
+    return ("%s%s" % (instance.group.get_absolute_url(), filename))[1:]
 
 class Download(models.Model):
     group = models.ForeignKey("DownloadGroup")
     title = models.CharField(max_length=50)
-    file = models.FileField(upload_to=upload_path, storage=fs)
+    file = models.FileField(upload_to=upload_path)
     file_name = models.CharField(max_length=100)
     version = models.CharField(max_length=100)
     file_size = models.IntegerField()

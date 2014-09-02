@@ -40,6 +40,8 @@ def file_listing(request, path, template_name="downloads/index.html"):
         }
         return render(request, template_name, data)
     else:
+        # is possible to configure nginx etc, so this never runs, but for 
+        # testing this is good
         folder = None
         for part in path_parts[:-1]:
             try:
@@ -52,10 +54,4 @@ def file_listing(request, path, template_name="downloads/index.html"):
             download = folder.latest
         else:
             download = Download.objects.get(group=folder, file_name=path_parts[-1])
-        url = "%s%s" % (settings.DOWNLOADS_FILE_LOCATION, download.file_name)
-        if not settings.DOWNLOADS_FILE_PROXY:
-            return redirect(url)
-        else:
-            responce = HttpResponse()
-            responce["X-Accel-Redirect"] = url
-            return responce
+        return redirect(download.file.url)
