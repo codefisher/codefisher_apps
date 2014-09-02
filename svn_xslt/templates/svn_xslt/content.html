@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% load djangopress_tags %}
+
 
 
 {% block doctype %}{% endblock %}
 {% block head_tags %}
-    <link type="text/css" rel="stylesheet" href="{% media_url %}themes/default/download.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}themes/default/download.css" />
 {% endblock %}
 
 {% block page_title %}
