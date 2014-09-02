@@ -34,9 +34,9 @@ class ExtInfoNode(ExtNode):
                               for compat in extension.compatibility.all() if compat.app_id in settings.MOZ_APP_NAMES],
         }
         return nodes.render("""
-        <li>Name: <a href="{{ extension.group.homepage }}">{{ extension.title }}</a></li>
+        <li>Name: <a href="{{ extension.group.homepage }}">{{ extension.title }}</a> <a href="{{ extension.get_absolute_url }}">Download</a></li>
         <li>Released: {{ extension.release_date|date:"DATE_FORMAT" }}</li>
-        <li>Version: <a href="{{ extension.get_absolute_url }}">{{ extension.version }}</a></li>
+        <li>Version: <a href="{{ extension.get_release_url }}">{{ extension.version }}</a></li>
         <li>Compatibility:
             <ul>
                 {% for app, min, max in compatibility %}

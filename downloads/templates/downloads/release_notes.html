@@ -5,6 +5,10 @@
     <link type="text/css" rel="stylesheet" href="{% media_url %}themes/default/download.css">
 {% endblock %}
 
+{% block content_adds %}
+<iframe scrolling="no" frameborder="0" allowtransparency="true" height="160" width="728" style="border:0;" src="http://d.delivery49.com/widget/render/hash/ebfff75b3b4f88d6ae8cdac5d8847e83"></iframe>
+{% endblock %}
+
 {% block content %}
 
 <div class="release_notes">
@@ -12,7 +16,7 @@
     <small>{{ download.description }}</small>
     {{ download.release_notes|safe }}
 
-    {% if download.previous_release %}
+    {% if download.previous_release and download.previous_release.release_notes %}
         <a href="{{ download.previous_release.get_release_url }}">Previous Version</a>
     {% endif %}
 </div>

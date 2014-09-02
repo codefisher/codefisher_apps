@@ -1,5 +1,5 @@
 from models import DownloadGroup, Download
-from django.shortcuts import Http404, render, redirect
+from django.shortcuts import Http404, render, redirect, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponse
 
@@ -8,17 +8,14 @@ def release_notes(request, path, version,
     path_parts = path.split("/")
     folder = None
     for part in path_parts:
-        try:
-            folder = DownloadGroup.objects.get(slug=part, parent=folder,
+        folder = get_object_or_404(DownloadGroup, version_slug=part, parent=folder,
                     sites__id__exact=settings.SITE_ID)
-        except DownloadGroup.DoesNotExist:
-            raise Http404
-    if folder is None:
-        raise Http404
     if version == "latest":
         download = folder.latest
     else:
         download = Download.objects.get(group=folder, version=version)
+    if not download.release_notes:
+        raise Http404
     data = {
         "download": download,
     }
