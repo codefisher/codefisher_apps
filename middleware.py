@@ -1,6 +1,6 @@
 import httplib2
 import re
-
+import zlib
 from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
@@ -93,8 +93,9 @@ class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
             #raise ValueError(cache_key)
             if hasattr(response, 'render') and callable(response.render):
                 response.add_post_render_callback(
-                    lambda r: self.cache.set(cache_key, r, timeout)
+                    lambda r: cache._cache.set(cache_key.encode("utf-8"), zlib.compress(r, 9), timeout)
                 )
             else:
-                cache._cache.set(cache_key.encode("utf-8"), response.content, timeout)
+                # we use the highest compression level, because since it is cached we hope for it to pay off
+                cache._cache.set(cache_key.encode("utf-8"), zlib.compress(response.content, 9), timeout)
         return response
