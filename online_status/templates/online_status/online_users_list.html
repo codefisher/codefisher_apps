@@ -1,0 +1,1 @@
+{% for online in onlineusers %}{% if foorloop.first == False %}, {% endif %}<a href="{{ online.user.get_absolute_url }}">{{ online.user.username }}</a>{% endfor %}
