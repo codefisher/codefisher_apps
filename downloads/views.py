@@ -1,7 +1,7 @@
 from models import DownloadGroup, Download
 from django.shortcuts import Http404, render, redirect, get_object_or_404
 from django.conf import settings
-from django.http import HttpResponse
+from django.core.exceptions import MultipleObjectsReturned
 
 def release_notes(request, path, version,
         template_name="downloads/release_notes.html"):
@@ -13,7 +13,12 @@ def release_notes(request, path, version,
     if version == "latest":
         download = folder.latest
     else:
-        download = get_object_or_404(Download, group=folder, version=version)
+        try:
+            download = get_object_or_404(Download, group=folder, version=version)
+        except MultipleObjectsReturned:
+            # two objects with the same version, we just get the first, and hope
+            # that is the right one.
+            download = Download.objects.filter(group=folder, version=version)[0]
     if not download.release_notes:
         raise Http404
     data = {
