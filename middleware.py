@@ -49,7 +49,7 @@ class PagesMiddleware(object):
             data = {"page_content": m.group(2), 
                     "title": response.get("x-page-title"), 'extra_head_content': m.group(1)}
             return render(request, "base.html", data)
-        return HttpResponse(content, status=int(response['status']), mimetype=response['content-type'])
+        return HttpResponse(content, status=int(response['status']), content_type=response['content-type'])
     
     
 class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
