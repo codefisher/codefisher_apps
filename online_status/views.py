@@ -11,7 +11,7 @@ from online_status.utils import encode_json
 def users(request):
     """Json of online users, useful f.ex. for refreshing a online users list via an ajax call or something"""
     online_users = cache.get(CACHE_USERS)
-    return HttpResponse(simplejson.dumps(online_users, default=encode_json), mimetype='application/javascript')
+    return HttpResponse(simplejson.dumps(online_users, default=encode_json), content_type='application/javascript')
     
 
 def example(request):

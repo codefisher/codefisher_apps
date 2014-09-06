@@ -13,6 +13,8 @@
         <xsl:value-of select="/svn/index/@path"/>
 {% endblock %}
 
+{% block content_adds %}{% endblock %}
+
 {% block content %}
     <h2><xsl:value-of select="/svn/index/@base"/> 
          - Revision <xsl:value-of select="/svn/index/@rev"/>: 
