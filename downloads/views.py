@@ -13,7 +13,7 @@ def release_notes(request, path, version,
     if version == "latest":
         download = folder.latest
     else:
-        download = Download.objects.get(group=folder, version=version)
+        download = get_object_or_404(Download, group=folder, version=version)
     if not download.release_notes:
         raise Http404
     data = {
