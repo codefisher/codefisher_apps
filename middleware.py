@@ -93,7 +93,7 @@ class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
             #raise ValueError(cache_key)
             if hasattr(response, 'render') and callable(response.render):
                 response.add_post_render_callback(
-                    lambda r: cache._cache.set(cache_key.encode("utf-8"), zlib.compress(r, 9), timeout)
+                    lambda r: cache._cache.set(cache_key.encode("utf-8"), zlib.compress(r.content, 9), timeout)
                 )
             else:
                 # we use the highest compression level, because since it is cached we hope for it to pay off
