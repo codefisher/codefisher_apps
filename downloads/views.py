@@ -58,5 +58,5 @@ def file_listing(request, path, template_name="downloads/index.html"):
         if path_parts[-1].split('.')[0] == "latest":
             download = folder.latest
         else:
-            download = Download.objects.get(group=folder, file_name=path_parts[-1])
+            download = get_object_or_404(Download, group=folder, file_name=path_parts[-1])
         return redirect(download.file.url)
