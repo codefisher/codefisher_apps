@@ -21,6 +21,7 @@ from scrapy.contrib.djangoitem import DjangoItem
 from enchant import DictWithPWL
 from enchant.checker import SpellChecker
 from enchant.tokenize import HTMLChunker, EmailFilter, URLFilter
+django.utils.encoding import DjangoUnicodeDecodeError
 
 class Page(DjangoItem):
     django_model = CrawledPage
@@ -136,9 +137,12 @@ class SiteSpellerSpider(BaseSiteSpider):
         SpelledPage.objects.filter(process=self.process).delete()
         
     def _get_item(self, response):
-        word_dict = DictWithPWL(settings.SITE_CRAWLER_DICT_LANG, settings.SITE_CRAWLER_DICT_PWL)
-        spell_checker = SpellChecker(word_dict, re.sub(r'\s+', ' ', stripped_html(force_unicode(response.body))), filters=(EmailFilter, URLFilter))
-        results = "\n".join(set(x.word for x in spell_checker))
+        try:
+            word_dict = DictWithPWL(settings.SITE_CRAWLER_DICT_LANG, settings.SITE_CRAWLER_DICT_PWL)
+            spell_checker = SpellChecker(word_dict, re.sub(r'\s+', ' ', stripped_html(force_unicode(response.body))), filters=(EmailFilter, URLFilter))
+            results = "\n".join(set(x.word for x in spell_checker))
+        except DjangoUnicodeDecodeError:
+            results = "" # might happen with binary file, or something really messed up
         page = SpellingPage(url=response.url, results=results, size=len(response.body), process=self.process)
         self._set_title(page, response)
         #self._set_new_cookies(page, response)
