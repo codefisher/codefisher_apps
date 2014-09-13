@@ -21,7 +21,7 @@ from scrapy.contrib.djangoitem import DjangoItem
 from enchant import DictWithPWL
 from enchant.checker import SpellChecker
 from enchant.tokenize import HTMLChunker, EmailFilter, URLFilter
-django.utils.encoding import DjangoUnicodeDecodeError
+from django.utils.encoding import DjangoUnicodeDecodeError
 
 class Page(DjangoItem):
     django_model = CrawledPage
