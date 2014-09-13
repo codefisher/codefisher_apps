@@ -42,7 +42,7 @@ class PagesMiddleware(object):
                 response, content = conn.request(url, request.method, data, headers=headers)
         except:
             raise Http404
-        if int(response['status']) == 404:
+        if int(response['status']) != 200:
             raise Http404
         if response.get("x-page-title"):
             m = re.search('<head>(.*)</head><body>(.*)</body>', content, flags=re.DOTALL)

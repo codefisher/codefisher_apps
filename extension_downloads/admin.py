@@ -6,7 +6,7 @@ from django import forms
 from models import ExtensionDownload, Compatibility
 
 class DownloadForm(forms.ModelForm):
-    set_as_latest = forms.BooleanField(initial=True, required=False)
+    set_as_latest = forms.BooleanField(required=False)
 
     class Meta:
         model = ExtensionDownload

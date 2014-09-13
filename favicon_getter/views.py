@@ -58,7 +58,7 @@ def file_to_images(fp):
 
 def get_favicon_as_images(url):
     favicon_url = get_favicon_url(url)
-    icon_fp = io.BytesIO(urllib2.urlopen(favicon_url).read())
+    icon_fp = io.BytesIO(urllib2.urlopen(favicon_url, timeout=5).read())
     icons = file_to_images(icon_fp)
     icon_fp.close()
     return icons
