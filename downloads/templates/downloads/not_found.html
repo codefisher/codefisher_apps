@@ -7,13 +7,11 @@
 {% block content %}
 
 <div class="release_notes">
-    <h2>{{ download.title }} {{ download.version }}</h2>
-    <small>{{ download.description }}</small>
-    {{ download.release_notes|safe }}
-
-    {% if download.previous_release and download.previous_release.release_notes %}
-        <a href="{{ download.previous_release.get_release_url }}">Previous Version</a>
-    {% endif %}
+    <h2>{{ folder.title }}</h2>
+    <small>{{ folder.latest.description }}</small>
+    <p>
+    	There is no release notes for this version of <a href="{{ folder.homepage }}">{{ folder.title }}</a>.  The latest release notes are for <a href="{{ folder.latest.get_release_url }}">version {{ folder.latest.version }}</a>.
+    </p>
 </div>
 
 {% endblock %}

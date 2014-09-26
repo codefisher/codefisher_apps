@@ -14,11 +14,13 @@ def release_notes(request, path, version,
         download = folder.latest
     else:
         try:
-            download = get_object_or_404(Download, group=folder, version=version)
+            download = Download.objects.get(group=folder, version=version)
         except MultipleObjectsReturned:
             # two objects with the same version, we just get the first, and hope
             # that is the right one.
             download = Download.objects.filter(group=folder, version=version)[0]
+        except:
+            return render(request, "downloads/not_found.html", {"folder": folder})
     if not download.release_notes:
         raise Http404
     data = {
