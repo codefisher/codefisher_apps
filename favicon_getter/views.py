@@ -63,7 +63,7 @@ def get_favicon_as_images(url):
         icon_fp = io.BytesIO(fav.read())
         fav.close()
         icons = file_to_images(icon_fp)
-        icon_fp.close()
+        #icon_fp.close() # we get errors latter if we close this now
         return icons
     except:
         return None
