@@ -1,2 +1,2 @@
-/firefox - I don't want it anymore
-/image/make_blog_bar
+/firefox/.*
+/image/.+_blog_bar.*

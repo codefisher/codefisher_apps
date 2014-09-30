@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<p>
+	In the form below simply type a web site name, and if possible the images from its favicon will be extracted and displayed, along with the actual icon.
+</p>
+	
+	<form action="{% url 'ico-favicons' %}" id="favicon-form" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<p><input type="submit" value="Submit" /></p>
+    </form>
+    <div id="favicons">
+    	{% if submitted %}
+    		{% if tags %} <div>Images:<br /> {{ tags|safe }}</div> {% else %} <p>There are no favicons for this site.</p> {% endif %}
+    		{% if favicon_url %}<div>Favicon:<br /> <img style="margin:10px;" src="{{ favicon_url }}" alt=""></div>{% endif %}
+    	{% endif %}
+    </div>
+    
+	<script type="text/javascript">
+	function loadFavIcons() {
+			$('#favicons').html("Loading...");
+			$.ajax({
+				url: '/ico/get_icons/',
+				type: "POST",
+				data: $('#favicon-form').serialize(),
+				dataType: "html",
+				success: function(msg){
+					if(msg == "fail") {
+						$('#favicons').html("There are no favicons for this site.");
+					} else {
+						$('#favicons').html(msg);
+					}
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					$('#favicons').html("There are no favicons for this site.");
+				}
+			});
+			return true;
+		}
+		$('#id_url').on("change", loadFavIcons);
+	</script>
+{% endblock %}

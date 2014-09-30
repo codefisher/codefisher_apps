@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>File to Icon</h2>
+
+<p>
+ The below form allows you to get an icon out of a most files that can contain them.  For example the firefox.exe that is used to run Firefox.  The icon can then be saved as an .ICO file.  This has only been tested to work in Firefox on Windows.  I don't know what will happen on other operating systems, and I know it will not work in other browsers.  JavaScript is required.
+</p>
+
+<script type="text/javascript"><!--
+ function getIcon(form){ 
+  var iconPath = 'moz-icon:file:///'+form.file.value+'?size='+parseInt(form.size.value);
+  var icon = document.getElementById('icon');
+  icon.src = iconPath;
+  icon.setAttribute('width', icon.naturalWidth);
+  icon.setAttribute('height', icon.naturalHeight);
+  form.size.value = icon.naturalWidth;
+ }
+//-->
+</script>
+
+<form action="#icon" onsumbit="return false" method="post">
+ <div>
+ <p>
+  Select a file that you would like to use.
+ </p>
+ <input type="file" name="file">
+ <p>
+  Pick a size for the icon you want.  The closest match will be used.
+ </p>
+ <input type="text" name="size" value="32" size="3">
+ <input type="button" value="Get Icon" onclick="getIcon(this.form);">
+ </div>
+</form>
+
+<img src="/images/dot.gif" id="icon" alt="" width="0" height="0">
+
+<h2>From ICO to PNG</h2>
+
+<p>
+ The above form produces .ICO files.  This is fine, expect many image programs can't handle .ICO files.  So here we convert them to PNGs that can be opened by almost all image editors.
+</p>
+
+<form action="{% url 'ico-index' %}#png-files" enctype="multipart/form-data" method="post">
+ <div>
+ <p>
+  Put in the file that you would like to use.  If this is the image used above, you will need to save it to your computer first then put it in the box below.
+ </p>
+ <input type="file" name="ico-file">
+ <input type="submit" name="ico-to-png" value="Get PNG">
+ </div>
+</form>
+<div style="text-align:center" id="png-files">
+	{{ pngs|safe }}
+</div>
+
+<h2>PNG to ICO</h2>
+
+<p>
+ You can also the the reverse of the above and pack multiple PNGs into one ICO file.  Only the use of PNGs at this stage is supported.  The maximum icon size is 256 which is imposed by the ICO file format itself, anything larger could result in a corrupt icon.
+</p>
+
+<form action="{% url 'ico-index' %}#ico-file" enctype="multipart/form-data" method="post">
+ <div>
+ <p>
+  Put in the file that you would like to use.  If this is the image used above, you will need to save it to your computer first then put it in the box below.
+ </p>
+ <div id="inputs">
+  <input type="file" id="png-file-1" style="display:block" name="png-file-1">
+ </div>
+ <input type="button" value="Add Another PNG" onclick="addNewFile(this.form)">
+ <div><input type="submit" name="png-to-ico" value="Get Ico"></div>
+ </div>
+</form>
+<script type="text/javascript"><!--
+ function addNewFile(form){
+  var box = document.getElementById('inputs');
+  var div = document.createElement('div');
+  var input = document.createElement('input');
+  var i = 1;
+  while(document.getElementById('png-file-'+i)){
+   i++;
+  }
+  input.id = 'png-file-' +i;
+  input.name = 'png-file-' +i;
+  input.type = 'file';
+  div.appendChild(input);
+  var minus = document.createElement('input');
+  minus.type = 'button';
+  minus.value = 'Remove'
+  minus.setAttribute('onclick','removeFile(this);');
+  div.appendChild(minus);
+  box.appendChild(div);
+ }
+ function removeFile(item){
+  item.parentNode.parentNode.removeChild(item.parentNode);
+ }
+//--></script>
+
+<div style="text-align:center" id="ico-file">
+	{% if ico == False %} <p>Failed to Create File.</p> {% endif %}
+</div>
+
+{% endblock %}

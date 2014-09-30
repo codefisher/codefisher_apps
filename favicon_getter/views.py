@@ -3,6 +3,14 @@ import urlparse
 import HTMLParser
 import io
 import operator
+import subprocess
+import base64
+
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+from django import forms
+from django.core.files.uploadhandler import TemporaryFileUploadHandler
+from django.http import HttpResponse
 
 from PIL import Image
 import Win32IconImagePlugin
@@ -56,9 +64,10 @@ def file_to_images(fp):
     except:
         return None
 
-def get_favicon_as_images(url):
+def get_favicon_as_images(url=None, favicon_url=None):
     try:
-        favicon_url = get_favicon_url(url)
+        if not favicon_url:
+            favicon_url = get_favicon_url(url)
         fav = urllib2.urlopen(favicon_url, timeout=10)
         icon_fp = io.BytesIO(fav.read())
         fav.close()
@@ -67,6 +76,23 @@ def get_favicon_as_images(url):
         return icons
     except:
         return None
+    
+@csrf_exempt
+def favicons(request):
+    if not request.POST.get("url"):
+        return HttpResponse("fail")
+    url = request.POST.get("url")
+    parsed_url = urlparse.urlparse(url)
+    if parsed_url[0] == "":
+        url = "http://" + url
+    elif parsed_url[0] not in ["http", "https", "ftp", "ftps"]:
+        return HttpResponse("fail")
+    icons = get_favicon_as_images(url)  
+    if icons is None:
+        return HttpResponse("fail")
+    icons = get_favicon_as_images(url)  
+    tags = get_tags(icons)
+    return HttpResponse("\n".join(tags))
 
 def get_sized_icons(url, sizes):
     icons = get_favicon_as_images(url)
@@ -81,3 +107,71 @@ def get_sized_icons(url, sizes):
     for size in set(sizes).difference(set(result.keys())):
         result[size] = largest.resize((size, size))
     return result
+
+@csrf_exempt # we do this, or we can't change the upload_handlers
+def index(request):
+    request.upload_handlers.insert(0, TemporaryFileUploadHandler())
+    tags = []
+    ico = True
+    if request.method == "POST":
+        if "ico-to-png" in request.POST:
+            if "ico-file" in request.FILES:
+                icons = file_to_images(request.FILES["ico-file"].file)
+                if icons:
+                    tags = get_tags(icons)
+        elif "png-to-ico" in request.POST:
+            name = "png-file-1"
+            index = 1
+            files = []
+            while name in request.FILES:
+                files.append(request.FILES[name].temporary_file_path())
+                index += 1
+                name = "png-file-%s" % index
+            try:
+                ico_data = subprocess.check_output(["icotool", "-c"] + files)
+                responce = HttpResponse(ico_data, content_type="application/octet-stream")
+                responce['Content-Disposition'] = 'attachment; filename=icon.ico'
+                return responce
+            except subprocess.CalledProcessError:
+                ico = False
+    data = {
+          "pngs": "\n".join(tags),
+          "ico": ico,
+    }
+    return render(request, "ico/index.html", data)
+
+class  UrlForm(forms.Form):
+    url = forms.URLField(label="Website Url")
+    
+def get_tags(icons):
+    tags = []
+    for icon, size in icons:
+        value = io.BytesIO()
+        icon.save(value, "png")
+        data = "data:image/png;base64," + base64.b64encode(value.getvalue())
+        value.close()
+        tags.append('<img style="margin:10px;" src="%s" width="%s" height="%s" alt="">' % (data, size, size))
+    return tags
+    
+def favicon(request):
+    tags = []
+    submitted = False
+    favicon_url = None
+    if request.method == "POST":
+        form = UrlForm(request.POST)
+        if form.is_valid():
+            url = form.cleaned_data['url']
+            favicon_url = get_favicon_url(url)
+            icons = get_favicon_as_images(favicon_url=favicon_url)
+            if icons:
+                tags = get_tags(icons)
+                submitted = True
+    else:
+        form = UrlForm()
+    data = {
+            "form": form,
+            "tags": "".join(tags),
+            "submitted": submitted,
+            "favicon_url": favicon_url,
+    }
+    return render(request, "ico/favicon.html", data)

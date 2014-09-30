@@ -8,6 +8,12 @@ from django.middleware.cache import UpdateCacheMiddleware
 from django.utils.cache import patch_response_headers, get_max_age, has_vary_header
 from django.core.cache import cache
 
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        return x_forwarded_for.split(',')[-1].strip()
+    return request.META.get('REMOTE_ADDR')
+
 class PagesMiddleware(object):
     """This is for checking the old site, so to load pages from there """
     def process_response(self, request, response):
@@ -30,6 +36,7 @@ class PagesMiddleware(object):
         headers = dict((header.lstrip('HTTP_'), value) for (header, value) 
            in request.META.items() if header.startswith('HTTP_'))
         headers["x-internal-from-new"] = "yes"
+        headers["X-FORWARDED-FOR"] = get_client_ip(request)
         try:
             if request.method == 'GET':
                 url_ending = '%s?%s' % (url, request.GET.urlencode())
