@@ -24,6 +24,7 @@ def release_notes(request, path, version,
     if not download.release_notes:
         raise Http404
     data = {
+        "title": "%s %s" % (download.title, download.version),
         "download": download,
     }
     return render(request, template_name, data)
@@ -42,6 +43,7 @@ def file_listing(request, path, template_name="downloads/index.html"):
         downloads = Download.objects.filter(group=folder).order_by("-release_date")
         data = {
             "folder": folder,
+            "title": folder.title,
             "subfolders": subfolders,
             "downloads": downloads,
         }

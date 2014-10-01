@@ -1,7 +1,7 @@
 import httplib2
 import re
 from django.conf import settings
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, HttpResponsePermanentRedirect
 from django.shortcuts import render
 from djangopress.core.util import get_client_ip
 from models import ProxyPage
@@ -12,8 +12,19 @@ class ProxyMiddleware(object):
         if response.status_code != 404:
             return response # No need to check for a flatpage for non-404 responses.
         try:
-            proxy = ProxyPage.objects.get(path=request.path, site_id=settings.SITE_ID)
-            return self.proxy_page(request, proxy)
+            try:
+                proxy = ProxyPage.objects.get(path=request.path, site_id=settings.SITE_ID)
+                return self.proxy_page(request, proxy)
+            except ProxyPage.DoesNotExist:
+                try:
+                    if request.path[-1] != '/':
+                        ProxyPage.objects.get(path=request.path+'/', site_id=settings.SITE_ID)
+                        #did not throw an exception, so lets redirect
+                        return HttpResponsePermanentRedirect(request.path+'/')
+                    else:
+                        raise Http404
+                except ProxyPage.DoesNotExist:
+                    raise Http404
         # Return the original response if any errors happened. Because this
         # is a middleware, we can't assume the errors will be caught elsewhere.
         except Http404:

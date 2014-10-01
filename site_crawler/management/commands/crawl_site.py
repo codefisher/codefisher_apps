@@ -96,7 +96,7 @@ class SiteCheckerSpider(BaseSiteSpider):
         self.link_map = defaultdict(list)
         self.link_extractor = SgmlLinkExtractor(tags=('a', 'area', 'img', 'link', 'script'), attrs=('href', 'src'), deny_extensions=())
 
-    def set_up(self):
+    def setup(self):
         CrawledPage.objects.filter(process=self.process).delete()
         
     def clean_up(self):
