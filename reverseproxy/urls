@@ -1,2 +1,6 @@
-/firefox/.*
-/image/.+_blog_bar.*
+/firefox/
+/firefox/download
+/firefox/download.png
+/firefox/download.js
+/image/make_blog_bar
+/image/img_blog_bar

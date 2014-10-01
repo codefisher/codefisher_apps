@@ -1,10 +1,10 @@
 from django.contrib import admin
-from codefisher_apps.reverseproxy import ProxyPages
+from models import ProxyPage
 
-class ProxyPagesAdmin(admin.ModelAdmin):
+class ProxyPageAdmin(admin.ModelAdmin):
     list_display = ('path', 'proxy')
     list_filter = ('site',)
     search_fields = ('path', 'proxy')
     radio_fields = {'site': admin.VERTICAL}
 
-admin.site.register(ProxyPages, ProxyPagesAdmin)
+admin.site.register(ProxyPage, ProxyPageAdmin)
