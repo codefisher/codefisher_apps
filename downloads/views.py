@@ -43,7 +43,7 @@ def file_listing(request, path, template_name="downloads/index.html"):
         downloads = Download.objects.filter(group=folder).order_by("-release_date")
         data = {
             "folder": folder,
-            "title": folder.title,
+            "title": folder.title if folder else "Downloads",
             "subfolders": subfolders,
             "downloads": downloads,
         }
