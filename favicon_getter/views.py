@@ -135,6 +135,7 @@ def index(request):
             except subprocess.CalledProcessError:
                 ico = False
     data = {
+        "title": "ICO tools",
           "pngs": "\n".join(tags),
           "ico": ico,
     }
@@ -169,6 +170,7 @@ def favicon(request):
     else:
         form = UrlForm()
     data = {
+            "title": "Get Favicon",
             "form": form,
             "tags": "".join(tags),
             "submitted": submitted,
