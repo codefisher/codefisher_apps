@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Pastel SVG Icons</h1>
+<p class="center">
+    <img src="/images/famreloaded/preview.png" width="336" height="96" alt="Pastel SVG Icons">
+</p>
+
+<h2>About</h2>
+
+<p>
+    Pastel SVG is an icon set based on the popular silk icons found at <a href="http://famfamfam.com/">FamFamFam.com</a>.  It uses the same style, and the icons are virtually identical.  The goal will to be to soon have all the icons that are contained in the original set.
+</p> 
+
+<p>
+    The greatest addition of this set, is that the icons where created as Sclable Vector Graphics which enables the icons to be created at many larger sizes then only the 16x16 that existed in the original set.
+</p>
+
+<h2>Download</h2>
+
+<p>
+    The icons can be <a href="/download/pastel-svg/pastel-svg-1.1.zip">downloaded (2.8 MB)</a> as a zip that contains icons in the sizes 16, 24, 32 and 48 or as a larger <a href="/download/pastel-svg/pastel-svg-large.zip">download (12.26 MB) </a> that contains icons in the sizes 64, 72, 96, 128, 256.
+</p>
+<p style="font-size:11px;">
+    Please do not link directly to the downloads, as these links are likely to change as I update the package.
+</p>
+
+<p>
+    The other alternative is to use an online search to just find the icons you need.  You can do that either by using the search box below, or browsing the <a href="/pastel-svg/icon/">list of icons</a>.
+</p>
+<form action="{% url 'haystack-pastelsvg-search' %}" class="center" method="get">
+    <div>
+        <input style="font-size:1.5em;" type="text" name="q">
+        <input style="font-size:1.5em;" type="submit" value="Search">
+    </div>
+</form>
+
+<h2>Getting the SVG source files</h2>
+
+<p>
+    All the of the above downloads only provide the PNG files that are generated from the SVG files that I created.  If you would like to use the SVG files, I ask that you make a donation.  Please see the <a href="/pastel-svg/donate/">donation page</a> for more details.  Once you have made the donation you will be able to download them from the <a href="/pastel-svg/download/">Pastel SVG Downloads</a> page.
+</p>
+
+<h2>What is Next</h2>
+
+<p>
+    Currently, though the Pastel SVG Icon set has more icons then the original, it still last 250+ icons from the silk icon set.  We are working on adding them soon.
+</p>
+<p>
+    Also, many of the 24x24 icons don't look their best.  This is because they are scaled 1.5x from the 16 icons, which causes many of the lines not to align perfectly causing the icons to look slightly blurred. To fix this it is necessary to created new version of the icons that have been retouched for this size. Currently this has been done for 100+ icons, but that still leaves a long way to go.
+</p>
+<p>
+    Finally we are very open to requests for new icons that might be a valuable addition to the icon set, please see our <a href="/pastel-svg/request/">Icon Request Page</a>.
+</p> 
+
+<h2>License</h2>
+
+<p>
+    The Pastel SVG icon set Created by Michael Buckley is
+    licensed under the
+</p>
+
+<p>
+    Creative Commons Attribution NonCommercial Share Alike 4.0
+    <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">http://creativecommons.org/licenses/by-nc-sa/4.0/</a>
+</p>
+<p>
+    However additionally I would kindly ask that:
+</p>
+
+<ol>
+    <li>
+        For non commercial use a link back to the home page is very appreciated 
+        but in no way required.
+    </li>
+    <li>
+        If you put Pastel SVG package on another web host in modified
+        form that you provide a link back to the Pastel SVG home page 
+        as part of the attribution.
+        <a href="http://codefisher.org/pastel-svg/">http://codefisher.org/pastel-svg/</a>
+    </li>
+</ol>
+
+<p>
+For those that want to use the icons commercially, I ask that you first make a <a href="/pastel-svg/donate/">donation</a> and then you may use it under following license.
+</p>
+
+<p>
+    Creative Commons Attribution Share Alike 4.0
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a>
+</p>
+
+
+{% endblock %}

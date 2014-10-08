@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load login_form from accounts %}
+
+{% block content %}
+<h1>Donate to support the Pastel SVG Icon Set</h1>
+
+<p>
+    Hello, thanks for you interest in donating to support the Pastel SVG icon set.  As a thanks for making this donation, you will be able to gain access to the follow.
+</p>
+
+<ol>
+    <li><strong>The possibility to download the icons in the original SVG format in which they were created.</strong></li>
+    <li>Additinally the possibility to download the icons in the following formats: ICO, ICNS, AI and EPS.</li>
+    <li>The permission to use the icons under <em>Creative Commons Attribution Share Alike 4.0
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">http://creativecommons.org/licenses/by-sa/4.0/</a></em> instead of the standard  <em>Creative Commons Attribution NonCommercial Share Alike 4.0
+    <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">http://creativecommons.org/licenses/by-nc-sa/4.0/</a></em></li>
+</ol>
+
+<p>
+    Once you have made the donation you will be able to download them from the <a href="/pastel-svg/download/">Pastel SVG Downloads</a> page.
+</p>
+
+{% if request.user.is_authenticated %}
+    <p>
+        To make the donation please press the below button to be redirected over to PayPal.
+    </p>
+    {{ form.render }} 
+{% else %}
+    {% login_form %}
+{% endif %}
+
+{% endblock %}

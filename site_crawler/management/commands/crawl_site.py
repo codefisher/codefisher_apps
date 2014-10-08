@@ -23,6 +23,8 @@ from enchant.checker import SpellChecker
 from enchant.tokenize import HTMLChunker, EmailFilter, URLFilter
 from django.utils.encoding import DjangoUnicodeDecodeError
 
+REMOVE_IDS = getattr(settings, "SITE_CRAWLER_REMOVE_IDS", ())
+
 class Page(DjangoItem):
     django_model = CrawledPage
     
@@ -139,7 +141,7 @@ class SiteSpellerSpider(BaseSiteSpider):
     def _get_item(self, response):
         try:
             word_dict = DictWithPWL(settings.SITE_CRAWLER_DICT_LANG, settings.SITE_CRAWLER_DICT_PWL)
-            spell_checker = SpellChecker(word_dict, re.sub(r'\s+', ' ', stripped_html(force_unicode(response.body))), filters=(EmailFilter, URLFilter))
+            spell_checker = SpellChecker(word_dict, re.sub(r'\s+', ' ', stripped_html(force_unicode(response.body), ids=REMOVE_IDS)), filters=(EmailFilter, URLFilter))
             results = "\n".join(set(x.word for x in spell_checker))
         except DjangoUnicodeDecodeError:
             results = "" # might happen with binary file, or something really messed up

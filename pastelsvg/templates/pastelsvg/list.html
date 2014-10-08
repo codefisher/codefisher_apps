@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load show_pagination %}
+{% load static %}
+
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="content-box">
+    <a href="/pastel-svg/">Pastel SVG Icons</a> &bull; Icon List
+</div>
+
+<h1>Pastel SVG Icons</h1>
+    <div class="pagination">
+        {% simple_pagination icons icon %}
+    </div>
+<table>
+	<tr>
+		<th>Icon</th>
+		<th>Title</th>
+		<th>Description</th>
+	</tr>
+{% for icon in icons %}
+	{% if item.object.file_name != icon.file_name %}
+	<tr>
+		<td><a href="{{ icon.get_absolute_url }}"><img class="pastelsvg-icon" alt="{{ icon.title }}" src="{{ icon.get_folder }}16/{{ icon.file_name }}.png" ></a></td>
+		<td><a href="{{ icon.get_absolute_url }}">{{ icon.title }}</a></td>
+		<td>{{ icon.description }}</td>
+	</tr>
+	{% endif %}
+{% endfor %}
+</table>
+    <div class="pagination">
+        {% show_pagination icons icon %}
+    </div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="content-box">
+    <a href="/pastel-svg/">Pastel SVG Icons</a> &bull; <a href="{% url 'pastel-svg-request' %}">Icon Requets</a>
+</div>
+
+<h1>Pastel SVG Icon Requets</h1>
+
+<p>
+    Welcome to Pastel SVG Icon Requets.  Here you can see what others have asked for, and vote for there requests, or follow the request meaning you will be notified when the request is implemented.  Finally you can <a href="{% url 'pastel-svg-request-make' %}">make a new icon request</a>.
+</p>
+
+
+{% for request in page %}
+<div class="content-box icon-request">
+    <h3 id="request-{{ request.pk }}"><a href="{% url 'pastel-svg-request' request_id=request.pk %}">{{ request.title }}</a></h3>
+    <small>{{ request.posted }} by {{ request.author_name }}</small>
+    <div>
+        {% if request.closed %}
+            <div class="votes"><span class="vote">{{ request.votes }}</span> Votes</div>
+        {% else %}
+            <div class="votes content-box"><a href="{% url 'pastel-svg-request-vote' request_id=request.pk %}"><span class="vote">{{ request.votes }}</span> Vote up</a></div>
+        {% endif %}
+    </div>
+    <div class="request-message">
+        {{ request.get_message }}
+        {% if request.concept_icon %}
+        <hr />
+        <p>
+            Concept Icon: <img src="{{ request.concept_icon.url }}" alt="">
+        </p>
+        {% endif %}
+        {% if request.closed %}
+            <hr />
+            <p>This has been closed because: {{ request.close_reason }}.</p>
+        {% endif %}
+    </div>
+    <div class="content-box">
+        {% for comment in request.get_comments %}
+            {% if not forloop.first %}<hr />{% endif %}
+            <p class="request-comment">{{ comment.message }} - {{ comment.author_name }} at {{ comment.posted }}</p>
+        {% endfor %}
+        <p>
+        <a href="{% url 'pastel-svg-request' request_id=request.pk %}#comment">Make Comment</a>
+        </p>
+    </div>
+</div>
+{% empty %}
+    <p>Current no icon requests have been made, be the first to ask!</p>
+{% endfor %}
+
+
+{% endblock %}

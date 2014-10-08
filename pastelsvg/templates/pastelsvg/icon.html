@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="content-box">
+    <a href="/pastel-svg/">Pastel SVG Icons</a> &bull; <a href="/pastel-svg/icon/">Icon List</a> &bull; {{ icon.title }}
+</div>
+
+<h1>{{ icon.title }}</h1>
+<div id="icon-box" class="content-box">
+{% for icon_url, size in icon.get_all_icons %}
+	<img alt='{{ icon.title }}' class="pastelsvg-icon" title='{{ icon.title }} at {{ size }}px by {{ size }}px' style='margin:2px;' src='{{ icon_url }}' >
+{% endfor %}
+<p class="clear">Keywords: 
+	{% for word in icon.key_words %}
+		{% if not forloop.first %} &bull; {% endif %}
+		<a href="{% url 'haystack-pastelsvg-search' %}?q={{ word }}">{{ word }}</a>
+	{% endfor %}
+</p>
+</div>
+
+<h2>Similar Icons</h2>
+
+<table>
+	<tr>
+		<th>Icon</th>
+		<th>Title</th>
+		<th>Description</th>
+	</tr>
+{% for item in searchqueryset %}
+	{% if item.object.file_name != icon.file_name %}
+	<tr>
+		<td><a href="{{ item.object.get_absolute_url }}"><img class="pastelsvg-icon" alt="{{ item.object.title }}" src="{{ item.object.get_folder }}16/{{ item.object.file_name }}.png" ></a></td>
+		<td><a href="{{ item.object.get_absolute_url }}">{{ icon.title }}</a></td>
+		<td>{{ item.object.description }}</td>
+	</tr>
+	{% endif %}
+{% endfor %}
+</table>
+{% endblock %}

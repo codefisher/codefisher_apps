@@ -13,7 +13,7 @@ class DownloadAdmin(admin.ModelAdmin):
     form = DownloadForm
 
     fields = ("group", "title", "file", "version", "homepage", "release_date", "description", "release_notes", "previous_release", "set_as_latest")
-    list_display = ('title', 'version', 'release_date')
+    list_display = ('title', 'version', 'group', 'release_date')
 
     def save_model(self, request, obj, form, change):
         if "file" in request.FILES:

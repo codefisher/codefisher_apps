@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load show_pagination %}
+{% load static %}
+{% load field_form %}
+
+
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="content-box">
+    <a href="/pastel-svg/">Pastel SVG Icons</a> &bull; Who uses Pastel SVG
+</div>
+    <h1>Projects that use Pastel SVG Icons</h1>
+    <div class="pagination">
+        {% simple_pagination page use_example %}
+    </div>
+    {% for example in page %}
+        <div class="content-box">
+            <h3><a href="{{ example.url }}">{{ example.title }}</a></h3>
+            {{ example.get_description }}
+        </div>
+    {% empty %}
+    <p>There are current none, be the first to submit a project that uses Pastel SVG Icons.</p>
+    {% endfor %}
+    <div class="pagination">
+        {% show_pagination page use_example %}
+    </div>
+    <p>
+        Are you using the Pastel SVG icons in one of your projects?  We would love to hear about it!  Please let us know about it using the form below.
+    </p>
+        <form class="content-box" method="post" action="{{request.path}}">
+            {% csrf_token %}
+            {% form form %}
+            <input type="submit" value="Submit">
+        </form>
+{% endblock %}

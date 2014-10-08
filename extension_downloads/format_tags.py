@@ -75,7 +75,7 @@ class ExtLocationNode(ExtNode):
         if extension is None:
             return ""
         if self.download:
-            return '''<a href="%s?download=true">''' % extension.get_absolute_url()
+            return '''<a href="%s?download=true" download="%s">''' % (extension.get_absolute_url(), extension.file_name)
         return '''<a href="%s">''' % extension.get_absolute_url()
 
 def ext_location(parser, token):

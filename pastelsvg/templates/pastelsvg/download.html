@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load login_form from accounts %}
+
+{% block content %}
+    <h1><a href="/pastel-svg/">Pastel SVG Downloads</a></h1>
+    {% if not request.user.is_authenticated %}
+        <p>
+            To be able to view these files for Pastel SVG you need to first login.
+        </p>
+        {% login_form %}
+    {% elif not permission %}
+        <p>
+            These files are only accessible to those that have made a donation. If you would like to access them please <a href="/pastel-svg/donate/">make a donation</a>.
+        </p>
+    {% else %}
+        <table>
+            <thead>
+            <tr>
+                <th>File</th>
+                <th>Version</th>
+                <th>Release Date</th>
+            </tr>
+            </thead>
+            <tr>
+                <td><a href="{{ icons.get_absolute_url }}">{{ icons.title }}</a></td>
+                <td>{{ icons.version }}</td>
+                <td>{{ icons.release_date }}</td>
+            </tr>
+            <tr>
+                <td><a href="{{ icons_large.get_absolute_url }}">{{ icons_large.title }}</a></td>
+                <td>{{ icons_large.version }}</td>
+                <td>{{ icons_large.release_date }}</td>
+            </tr>
+            {% for file in protected_files %}
+            <tr>
+                <td><a href="{{ file.get_absolute_url }}">{{ file.title }}</a></td>
+                <td>{{ file.version }}</td>
+                <td>{{ file.release_date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% load field_form %}
+
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+{% endblock %}
+
+{% block content %}
+
+<div class="content-box">
+    <a href="/pastel-svg/">Pastel SVG Icons</a> &bull; <a href="{% url 'pastel-svg-request' %}">Icon Requets</a> &bull; {{ icon_request.title }}
+</div>
+
+<div class="content-box icon-request">
+    <h1 id="request-{{ icon_request.pk }}">{{ icon_request.title }}</h1>
+    <small>{{ icon_request.posted }} by {{ icon_request.author_name }}</small>
+    <div>
+        {% if icon_request.closed %}
+            <div class="votes"><span class="vote">{{ icon_request.votes }}</span> Votes</div>
+        {% else %}
+            <div class="votes content-box"><a href="{% url 'pastel-svg-request-vote' request_id=icon_request.pk %}"><span class="vote">{{ icon_request.votes }}</span> Vote up</a></div>
+        {% endif %}
+        <div class="follow content-box"><a href="{% url 'pastel-svg-request-follow' request_id=icon_request.pk %}">Follow</a></div>
+    </div>
+    <div class="request-message">
+        {{ icon_request.get_message }}
+        {% if icon_request.concept_icon %}
+        <hr />
+        <p>
+            Concept Icon: <img src="{{ icon_request.concept_icon.url }}" alt="">
+        </p>
+        {% endif %}
+        {% if icon_request.closed %}
+            <hr />
+            <p>This has been closed because: {{ icon_request.close_reason }}.</p>
+        {% endif %}
+    </div>
+    <div class="content-box">
+        {% for comment in icon_request.get_comments %}
+            {% if not forloop.first %}<hr />{% endif %}
+            <p class="request-comment">{{ comment.message }} - {{ comment.author_name }} at {{ comment.posted }}</p>
+        {% endfor %}
+        <form id="comment" method="post" action="{% url 'pastel-svg-request' request_id=icon_request.pk %}">
+            {% csrf_token %}
+            {% form form %}
+            <input type="submit" value="Submit Comment">
+        </form>
+    </div>
+</div>
+
+{% endblock %}
