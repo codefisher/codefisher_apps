@@ -3,6 +3,8 @@
 
 {% block head_tags %}
     <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg/jquery-ui.css">
+    <script type="text/javascript" src="{% get_static_prefix %}js/pastel-svg/jquery-ui.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -17,7 +19,6 @@
     Welcome to Pastel SVG Icon Requets.  Here you can see what others have asked for, and vote for there requests, or follow the request meaning you will be notified when the request is implemented.  Finally you can <a href="{% url 'pastel-svg-request-make' %}">make a new icon request</a>.
 </p>
 
-
 {% for request in page %}
 <div class="content-box icon-request">
     <h3 id="request-{{ request.pk }}"><a href="{% url 'pastel-svg-request' request_id=request.pk %}">{{ request.title }}</a></h3>
@@ -26,8 +27,9 @@
         {% if request.closed %}
             <div class="votes"><span class="vote">{{ request.votes }}</span> Votes</div>
         {% else %}
-            <div class="votes content-box"><a href="{% url 'pastel-svg-request-vote' request_id=request.pk %}"><span class="vote">{{ request.votes }}</span> Vote up</a></div>
+            <div class="votes content-box"><a class="vote-link" href="{% url 'pastel-svg-request-vote' request_id=request.pk %}"><span class="vote">{{ request.votes }}</span> Vote up</a></div>
         {% endif %}
+        <div class="follow content-box"><a href="{% url 'pastel-svg-request-follow' request_id=request.pk %}">Follow</a></div>
     </div>
     <div class="request-message">
         {{ request.get_message }}
@@ -52,6 +54,8 @@
         </p>
     </div>
 </div>
+<script type="text/javascript" src="{% get_static_prefix %}js/pastel-svg.js"></script>
+
 {% empty %}
     <p>Current no icon requests have been made, be the first to ask!</p>
 {% endfor %}

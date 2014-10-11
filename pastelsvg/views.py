@@ -5,7 +5,7 @@ from codefisher_apps.pastelsvg.models import Icon, PastelSVGDonation, ProtectedD
 from haystack.query import SearchQuerySet
 from django.http import HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from djangopress.donate.views import DonationPayPalPaymentsForm
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -161,13 +161,25 @@ def request_icon(request, request_id):
 def request_icon_vote(request, request_id):
     if not request.session.get('pastel-svg-voted-%s' % request_id):
         request.session['pastel-svg-voted-%s' % request_id] = True
-        icon_request = IconRequest.objects.filter(is_spam=False, is_public=True, pk=request_id)
+        icon_request = IconRequest.objects.filter(is_spam=False, is_public=True, closed=False, pk=request_id)
         if not icon_request:
             raise Http404
         icon_request.update(votes=models.F('votes') + 1)
     else:
-        messages.add_message(request, messages.INFO, "You can't up vote a icon request multiple times.")
+        messages.add_message(request, messages.INFO, "You can't up vote an icon request multiple times.")
     return redirect(reverse('pastel-svg-request', kwargs={'request_id': request_id}))
+
+def request_icon_vote_ajax(request, request_id):
+    if not request.session.get('pastel-svg-voted-%s' % request_id):
+        request.session['pastel-svg-voted-%s' % request_id] = True
+        icon_request = IconRequest.objects.get(is_spam=False, is_public=True, closed=False, pk=request_id)
+        if not icon_request:
+            raise Http404
+        icon_request.votes += 1
+        icon_request.save()
+        return HttpResponse(str(icon_request.votes))
+    else:
+        return HttpResponse("You can't up vote an icon request multiple times.")
 
 @login_required
 def request_icon_follow(request, request_id):
