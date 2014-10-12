@@ -18,7 +18,13 @@ from djangopress.forum.views import check_askmet_spam
 from django.contrib.auth.decorators import login_required
 
 def index(request):
+    icon_group, icons = get_download('pastel.svg@codefisher.org')
+    icon_group_large, icons_large = get_download('pastel.svg.large@codefisher.org')
     data = {
+            "icon_group": icon_group,
+            "icons": icons,
+            "icon_group_large": icon_group_large,
+            "icons_large": icons_large,
         "title": "Pastel SVG Icon Set"
     }
     return render(request, 'pastelsvg/index.html' , data)
@@ -281,6 +287,8 @@ def download_file(request, file, file_name):
         raise Http404
 
 def list_icons(request, page=1):
+    if request.GET.get('name'):
+        return redirect(reverse('pastel-svg-icon', kwargs={'file_name': request.GET.get('name')}))
     icon_list = Icon.objects.all().order_by('title')
     paginator = Paginator(icon_list, 30)
     try:

@@ -7,7 +7,11 @@ class DownloadGroup(models.Model):
     parent = models.ForeignKey("DownloadGroup", null=True, blank=True)
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
+    path = models.CharField(max_length=200, db_index=True,
+            blank=True, null=True, editable=False)
     version_slug = models.SlugField(max_length=50)
+    version_path = models.CharField(max_length=200, db_index=True,
+            blank=True, null=True, editable=False)
     latest = models.ForeignKey("Download", null=True, blank=True, on_delete=models.SET_NULL)
     homepage = models.URLField(max_length=255, null=True, blank=True)
     identifier = models.CharField(max_length=50, null=True, blank=True)
@@ -18,12 +22,14 @@ class DownloadGroup(models.Model):
 
     def __unicode__(self):
         return self.title
+    
+    def save(self):
+        self.path = '/'.join(self.get_path_parts())
+        self.version_path = '/'.join(self.get_version_parts())
+        super(DownloadGroup, self).save()
 
     def get_absolute_url(self):
-        if self.parent == None:
-            return reverse('download-file-listing', kwargs={'path': '%s/' % self.slug})
-        else:
-            return "%s%s/" % (self.parent.get_absolute_url(), self.slug)
+        return reverse('download-file-listing', kwargs={'path': '%s/' % self.path})
 
     def get_path_parts(self):
         if self.parent == None:
@@ -71,6 +77,6 @@ class Download(models.Model):
 
     def get_release_url(self):
         return reverse('download-release-notes', kwargs={
-                            'path': '/'.join(self.group.get_version_parts()),
+                            'path': self.group.version_path,
                             'version': self.version,
                         })

@@ -14,7 +14,7 @@ class DownloadForm(forms.ModelForm):
 
 class DownloadAdmin(admin.ModelAdmin):
     fields = ("file", "release_notes", "group", "set_as_latest")
-    list_display = ('title', 'version', 'release_date')
+    list_display = ('title', 'version', 'group', 'release_date')
     form = DownloadForm
 
     def save_model(self, request, obj, form, change):
