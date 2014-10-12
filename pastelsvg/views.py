@@ -273,8 +273,9 @@ def download(request):
 def download_file(request, file, file_name):
     if request.user.is_authenticated() and has_permission(request, 'pastelsvg', 'can_download_protected_files'):
         download_file = get_object_or_404(ProtectedDownload, pk=file)
-        responce =  HttpResponse('')
+        responce =  HttpResponse('', content_type='')
         responce["X-Accel-Redirect"] =  download_file.file.url
+        del responce['Content-Type']
         return responce
     else:
         raise Http404
