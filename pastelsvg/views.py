@@ -1,21 +1,26 @@
 import time
-from django.db import models
 from django.shortcuts import render, get_object_or_404, redirect
 from codefisher_apps.pastelsvg.models import Icon, PastelSVGDonation, ProtectedDownload, IconRequest, IconRequestComment, UseExample
 from haystack.query import SearchQuerySet
-from django.http import HttpResponse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import Http404, HttpResponse
 from djangopress.donate.views import DonationPayPalPaymentsForm
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from djangopress.core.util import has_permission, get_client_ip
+from djangopress.core.util import has_permission, get_client_ip, choose_form
 from codefisher_apps.downloads.models import Download, DownloadGroup
 from django import forms
 from django.contrib import messages
 # we use the same fields so this works
 from djangopress.forum.views import check_askmet_spam
-from django.contrib.auth.decorators import login_required
+
+from upvotes.views import MakeRequest, RequestList, RequestView, RequestVote, RequestVoteAjax, RequestFollow
+from upvotes.forms import get_request_form, get_anon_request_form, get_request_comment_form, get_anon_request_comment_form
+
+IconRequestForm = get_request_form(IconRequest, ('concept_icon', ))
+IconRequestAnonymousForm = get_anon_request_form(IconRequest, ('concept_icon', ))
+IconRequestCommentForm = get_request_comment_form(IconRequestComment)
+IconRequestCommentAnonymousForm = get_anon_request_comment_form(IconRequestComment)
 
 def index(request):
     icon_group, icons = get_download('pastel.svg@codefisher.org')
@@ -28,50 +33,15 @@ def index(request):
         "title": "Pastel SVG Icon Set"
     }
     return render(request, 'pastelsvg/index.html' , data)
-
-class RequestForm(forms.ModelForm):
-    class Meta(object):
-        fields = ('title', 'message', 'concept_icon')
-        model = IconRequest
-        
-class RequestAnonymousForm(forms.ModelForm):
-    class Meta(object):
-        fields = ('title', 'message', 'concept_icon', 'poster_name', 'poster_email')
-        model = IconRequest
-        
-    def __init__(self, *args, **kwargs):
-        super(RequestAnonymousForm, self).__init__(*args, **kwargs)
-        self.fields['poster_name'].required = True
-        self.fields['poster_email'].required = True
-        
-class IconRequestCommentForm(forms.ModelForm):
-    class Meta(object):
-        fields = ("message", )
-        model = IconRequestComment
-    
-    def __init__(self, *args, **kwargs):
-        super(IconRequestCommentForm, self).__init__(*args, **kwargs)
-        self.fields['message'].widget = forms.Textarea(attrs={'rows':3})
-        
-class IconRequestCommentAnonymousForm(IconRequestCommentForm):
-    class Meta(object):
-        fields = ("poster_name", "poster_email", "message")
-        model = IconRequestComment
-    
-    def __init__(self, *args, **kwargs):
-        super(IconRequestCommentAnonymousForm, self).__init__(*args, **kwargs)
-        self.fields['poster_name'].required = True
-        self.fields['poster_email'].required = True
-        
+      
 class UseExampleForm(forms.ModelForm):
     class Meta(object):
         fields = ("title", "url", "description")
         model = UseExample
-    
        
 class UseExampleAnonymousForm(UseExampleForm):
     class Meta(object):
-        fields = ("poster_name", "poster_email", "title", "url", "description")
+        fields = ("title", "poster_name", "poster_email", "url", "description")
         model = UseExample
     
     def __init__(self, *args, **kwargs):
@@ -107,110 +77,46 @@ def who_uses(request, page=1):
     }
     return render(request, 'pastelsvg/use_example.html' , data)
 
-def choose_form(request, authenticated, anonymous, *args, **kargs):
-    if request.user.is_authenticated():
-        return authenticated(*args, **kargs)
-    return anonymous(*args, **kargs)
-        
-def make_icon_request(request):
-    if request.method == "POST":
-        form = choose_form(request, RequestForm, RequestAnonymousForm, request.POST)
-        if form.is_valid():
-            icon_request = form.save(commit=False)
-            icon_request.ip = get_client_ip(request)
-            if request.user.is_authenticated():
-                icon_request.poster = request.user
-            icon_request.is_spam = check_askmet_spam(request, form)
-            icon_request.save()
-            if icon_request.is_spam:
-                data = {
-                        "title": "Request flagged as Spam",
-                        "message": "We are sorry, but your message was flagged as spam.  It will not be visible till an administrator has reviewed it."
-                }
-                return render(request, 'pastelsvg/message.html' , data) 
-            return redirect(reverse('pastel-svg-request'))
-    else:
-        form = choose_form(request, RequestForm, RequestAnonymousForm)
-    data = {
-        "title": "Make Pastel SVG Icon Request",
-        "form": form,
-    }
-    return render(request, 'pastelsvg/make_request.html' , data)
+class MakeIconRequet(MakeRequest):
+    template = 'pastelsvg/request/make.html'
+    title = "Make Pastel SVG Icon Request"
+    request_url = 'pastel-svg-request'
+    spam_url = 'pastel-svg-request-spam'
+    request_form = IconRequestForm
+    request_anonymous_form = IconRequestAnonymousForm
+    
+class IconRequestView(RequestView):
+    template = 'pastelsvg/request/request.html'
+    request_class = IconRequest
+    spam_url = 'pastel-svg-request-comment-spam'
+    request_url = 'pastel-svg-request'
+    comment_form = IconRequestCommentForm
+    comment_anonymous_form = IconRequestCommentAnonymousForm
 
-def request_icon(request, request_id):
-    icon_request = get_object_or_404(IconRequest, is_spam=False, is_public=True, pk=request_id)
-    if request.method == "POST":
-        form = choose_form(request, IconRequestCommentForm, IconRequestCommentAnonymousForm, request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.ip = get_client_ip(request)
-            if request.user.is_authenticated():
-                comment.poster = request.user
-            comment.is_spam = check_askmet_spam(request, form)
-            comment.request = icon_request
-            comment.save()
-            if comment.is_spam:
-                data = {
-                        "title": "Comment flagged as Spam",
-                        "message": "We are sorry, but your message was flagged as spam.  It will not be visible till an administrator has reviewed it."
-                }
-                return render(request, 'pastelsvg/message.html' , data) 
-    else:
-        form = choose_form(request, IconRequestCommentForm, IconRequestCommentAnonymousForm)
-    data = {
-        "title": icon_request.title,
-        "icon_request": icon_request,
-        "form": form,
-    }
-    return render(request, 'pastelsvg/request.html' , data)
+class IconVote(object):
+    request_class = IconRequest
+    session_id = 'pastel-svg-voted-%s'
+    request_url = 'pastel-svg-request'
+    duplicate_vote_message = "You can not up vote an icon request multiple times."
+    
+class IconRequestVote(IconVote, RequestVote):
+    pass
 
-def request_icon_vote(request, request_id):
-    if not request.session.get('pastel-svg-voted-%s' % request_id):
-        request.session['pastel-svg-voted-%s' % request_id] = True
-        icon_request = IconRequest.objects.filter(is_spam=False, is_public=True, closed=False, pk=request_id)
-        if not icon_request:
-            raise Http404
-        icon_request.update(votes=models.F('votes') + 1)
-    else:
-        messages.add_message(request, messages.INFO, "You can't up vote an icon request multiple times.")
-    return redirect(reverse('pastel-svg-request', kwargs={'request_id': request_id}))
+class IconRequestVoteAjax(IconVote, RequestVoteAjax):
+    pass
 
-def request_icon_vote_ajax(request, request_id):
-    if not request.session.get('pastel-svg-voted-%s' % request_id):
-        request.session['pastel-svg-voted-%s' % request_id] = True
-        icon_request = IconRequest.objects.get(is_spam=False, is_public=True, closed=False, pk=request_id)
-        if not icon_request:
-            raise Http404
-        icon_request.votes += 1
-        icon_request.save()
-        return HttpResponse(str(icon_request.votes))
-    else:
-        return HttpResponse("You can't up vote an icon request multiple times.")
+class IconRequestFollow(RequestFollow):
+    request_class = IconRequest
+    request_url = 'pastel-svg-request'
 
-@login_required
-def request_icon_follow(request, request_id):
-    icon_request = get_object_or_404(IconRequest, is_spam=False, is_public=True, pk=request_id)
-    if not request.user.icon_request_subscriptions.filter(pk=request_id).exists():
-        icon_request.subscriptions.add(request.user)
-        messages.add_message(request, messages.SUCCESS, "You are now following this request.  You will receive an email when it is implemented.")
-    else:
-        messages.add_message(request, messages.INFO, "You are already following this request.")
-    return redirect(reverse('pastel-svg-request', kwargs={'request_id': request_id}))
+    def get_subscriptions(self, request):
+        return request.user.icon_request_subscriptions
 
-def request_icon_list(request, page=1):
-    requests = IconRequest.objects.filter(is_spam=False, is_public=True).order_by('-votes')  
-    paginator = Paginator(requests, 10)    
-    try:
-        page = paginator.page(page)
-    except (EmptyPage, InvalidPage):
-        if page != 1:
-            return redirect(requests[0].get_absolute_url(paginator.num_pages))
-    data = {
-        "title": "Pastel SVG Icon Requests",
-        "page": page,
-    }
-    return render(request, 'pastelsvg/requests.html' , data)
-
+class RequestIconList(RequestList):
+    template = 'pastelsvg/request/index.html'
+    title = "Pastel SVG Icon Requests"
+    request_class = IconRequest
+    
 def donate_thanks(request):
     data = {
         "title": "Thanks for your Donation"

@@ -1,6 +1,10 @@
 from django.contrib import admin
 from codefisher_apps.pastelsvg.models import Icon, PastelSVGDonation, ProtectedDownload, IconRequest, IconRequestComment, UseExample
 from django.conf import settings
+from upvotes.admin import RequestAdmin, RequestCommentAdmin
+
+admin.site.register(IconRequest, RequestAdmin) 
+admin.site.register(IconRequestComment, RequestCommentAdmin)
 
 class IconAdmin(admin.ModelAdmin):
     list_display = ('file_name', 'icon', 'title', 'description', 'date_modified')
@@ -16,16 +20,6 @@ class PastelSVGDonationAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'amount', 'validated')
     
 admin.site.register(PastelSVGDonation, PastelSVGDonationAdmin)
-
-class IconRequestAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author_name', 'posted', 'votes', 'is_spam', 'is_public', 'closed')
-
-admin.site.register(IconRequest, IconRequestAdmin)
-
-class IconRequestCommentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author_name', 'posted', 'is_spam', 'is_public')
-    
-admin.site.register(IconRequestComment, IconRequestCommentAdmin)
 
 class UseExampleAdmin(admin.ModelAdmin):
     list_display = ('title', 'url', 'author_name', 'posted', 'validated')

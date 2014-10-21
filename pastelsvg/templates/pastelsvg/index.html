@@ -1,8 +1,13 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block head_tags %}
+    <link type="text/css" rel="stylesheet" href="{% get_static_prefix %}css/pastel-svg.css">
+{% endblock %}
 
 {% block content %}
 
-<h1>Pastel SVG Icons</h1>
+<h1><img src="/static/images/pastel-svg/32/color-wheel.png" width="32" height="32"> Pastel SVG Icons</h1>
 <p class="center">
     <img src="/images/famreloaded/preview.png" width="336" height="96" alt="Pastel SVG Icons">
 </p>
@@ -19,6 +24,10 @@
 
 <h2>Download</h2>
 
+<div class="center" id="pastesvg-download">
+	<a class="content-box" href="{{ icons.get_absolute_url }}"><img alt="" src="/static/images/pastel-svg/32/drive-down.png" height="32" width="32"> Download</a>
+</div>
+
 <p>
     The icons can be <a href="{{ icons.get_absolute_url }}">downloaded</a> ({{ icons.file_size|filesizeformat }}) as a zip that contains icons in the sizes 16, 24, 32 and 48 or as a larger <a href="{{ icons_large.get_absolute_url }}">download</a> ({{ icons_large.file_size|filesizeformat }}) that contains icons in the sizes 64, 72, 96, 128, 256.
 </p>
@@ -29,10 +38,10 @@
 <p>
     The other alternative is to use an online search to just find the icons you need.  You can do that either by using the search box below, or browsing the <a href="/pastel-svg/icon/">list of icons</a>.
 </p>
-<form action="{% url 'haystack-pastelsvg-search' %}" class="center" method="get">
+<form id="pastelsvg-search" action="{% url 'haystack-pastelsvg-search' %}" class="center" method="get">
     <div>
-        <input style="font-size:1.5em;" type="text" name="q">
-        <input style="font-size:1.5em;" type="submit" value="Search">
+        <input type="text" name="q">
+        <button type="submit"><img alt="" src="/static/images/pastel-svg/16/magnifier.png" height="16" width="16"> Search</button>
     </div>
 </form>
 

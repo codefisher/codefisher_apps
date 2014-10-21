@@ -1,3 +1,18 @@
+#pastesvg-download {
+	padding:1em; font-size:1.5em;
+}
+#pastesvg-download img {
+	vertical-align:bottom;
+}
+
+#pastesvg-download a {
+	padding:0.5em;
+}
+
+#pastelsvg-search input,#pastelsvg-search button {
+	font-size:1.5em;
+}
+
 .pastelsvg-icon, .results-box {
 	padding:2px;
   	background:#fff;
@@ -50,30 +65,4 @@
 	text-align:center;
 	margin:0 auto;
 	width:350px;
-}
-
-.icon-request h3 {
-	margin:0;
-}
-
-.icon-request small {
-	
-}
-
-.request-message {
-	clear:both;	
-}
-
-.request-comment {
-	font-size:0.8em;
-}
-
-.vote {
-	font-size:1.5em;
-	text-align:center;
-}
-
-.votes, .follow {
-	display:inline-block;
-	padding:5px;
 }

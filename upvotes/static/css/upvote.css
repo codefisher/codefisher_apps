@@ -1,0 +1,26 @@
+
+.upvote-request h3 {
+	margin:0;
+}
+
+.upvote-request small {
+	
+}
+
+.request-message {
+	clear:both;	
+}
+
+.request-comment {
+	font-size:0.8em;
+}
+
+.vote {
+	font-size:1.5em;
+	text-align:center;
+}
+
+.votes, .follow {
+	display:inline-block;
+	padding:5px;
+}
