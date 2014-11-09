@@ -74,6 +74,7 @@ payment_was_successful.connect(update_donation)
 class Icon(models.Model):
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
+    category = models.CharField(max_length=200)
     file_name = models.CharField(max_length=200, unique=True)
     date_modified = models.DateTimeField()
     

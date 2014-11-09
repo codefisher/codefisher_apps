@@ -16,9 +16,10 @@ class Command(BaseCommand):
             f.close()
             #print text
             match_title = re.search(r"<title>(.+)</title>", text).group(1)
+            match_category = re.search(r"<category>(.+)</category>", text).group(1)
             match_desc = re.search(r"<desc>(.+)</desc>", text).group(1)
             name = filename.rpartition('/')[2].partition('.')[0]
             modified = datetime.datetime.fromtimestamp(os.path.getmtime(filename))
             modified = timezone.make_aware(modified, timezone.get_default_timezone())
             Icon.objects.update_or_create(file_name=name, 
-                    defaults={"title": match_title, "description": match_desc, "date_modified": modified})
+                    defaults={"title": match_title, "category": match_category, "description": match_desc, "date_modified": modified})
