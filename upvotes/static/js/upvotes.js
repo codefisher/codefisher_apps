@@ -1,27 +1,29 @@
-   $(".vote-link").click(function (event) {
+   $(".votes").click(function (event) {
        event.preventDefault();
-       var anchor = $(this);
-       var address_value = anchor.attr("href");
+       var form = $(this);
+       var address_value = form.attr("action");
+       var data = form.serialize() + "&type=ajax";
        $.ajax({
-            url: address_value + "ajax/",
-            type: "GET",
+            url: address_value,
+            type: "POST",
+            data: data,
             dataType: "html",
             success: function(msg){
-                if(/^[0-9]$/.test(msg)) {
-                    anchor.children(".vote").html(msg);
+                if(/^[0-9]+$/.test(msg)) {
+                    form.find(".vote").html(msg);
                 } else {
-                    anchor.tooltip({ 
-                        items: anchor, 
+                    form.tooltip({ 
+                        items: form, 
                         content: msg,
-                        close: function( event, ui ) { anchor.tooltip( "destroy" ); }
+                        close: function( event, ui ) { form.tooltip( "destroy" ); }
                         }).tooltip( "open" );
                 }
             },
             error: function(jqXHR, textStatus, errorThrown){
-                   anchor.tooltip({ 
-                        items: anchor, 
+                   form.tooltip({ 
+                        items: form, 
                         content: "The icon request could not be up voted.",
-                        close: function( event, ui ) { anchor.tooltip( "destroy" ); }
+                        close: function( event, ui ) { form.tooltip( "destroy" ); }
                         }).tooltip( "open" );
             }
        });

@@ -118,48 +118,47 @@ class RequestVote(View):
     duplicate_vote_message = "You can not up vote a request multiple times."
     error_message = "This request could not be up voted."
     
-    def get(self, request, request_id):
-        if not request.session.get(self.session_id % request_id):
-            request.session[self.session_id % request_id] = True
-            upvote_request = self.request_class.objects.filter(is_spam=False, is_public=True, closed=False, pk=request_id)
-            if not upvote_request:
-                messages.add_message(request, messages.ERROR, self.error_message)
-                return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
-            upvote_request.update(votes=models.F('votes') + 1)
+    def post(self, request):
+        request_id = request.POST.get('request')
+        if request.POST.get('type') == 'ajax':
+            if not request.session.get(self.session_id % request_id):
+                request.session[self.session_id % request_id] = True
+                upvote_request = self.request_class.objects.get(is_spam=False, is_public=True, closed=False, pk=request_id)
+                if not upvote_request:
+                    raise Http404
+                upvote_request.votes += 1
+                upvote_request.save()
+                return HttpResponse(str(upvote_request.votes))
+            else:
+                return HttpResponse(self.duplicate_vote_message)
         else:
-            messages.add_message(request, messages.INFO, self.duplicate_vote_message)
-        return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
-    
-    
-class RequestVoteAjax(View):
-    request_class = None
-    session_id = None
-    duplicate_vote_message = "You can not up vote a request multiple times."
-    
-    def get(self, request, request_id):
-        if not request.session.get(self.session_id % request_id):
-            request.session[self.session_id % request_id] = True
-            upvote_request = self.request_class.objects.get(is_spam=False, is_public=True, closed=False, pk=request_id)
-            if not upvote_request:
-                raise Http404
-            upvote_request.votes += 1
-            upvote_request.save()
-            return HttpResponse(str(upvote_request.votes))
-        else:
-            return HttpResponse(self.duplicate_vote_message)
-        
+            if not request.session.get(self.session_id % request_id):
+                request.session[self.session_id % request_id] = True
+                upvote_request = self.request_class.objects.filter(is_spam=False, is_public=True, closed=False, pk=request_id)
+                if not upvote_request:
+                    messages.add_message(request, messages.ERROR, self.error_message)
+                    return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
+                upvote_request.update(votes=models.F('votes') + 1)
+            else:
+                messages.add_message(request, messages.INFO, self.duplicate_vote_message)
+            return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
+         
 class RequestFollow(View):
     request_class = None
     request_url = None
 
     @method_decorator(login_required)
-    def get(self, request, request_id):
+    def post(self, request):
+        request_id = request.POST.get('request')
         upvote_request = get_object_or_404(self.request_class, is_spam=False, is_public=True, pk=request_id)
         if not self.get_subscriptions(request).filter(pk=request_id).exists():
             upvote_request.subscriptions.add(request.user)
             messages.add_message(request, messages.SUCCESS, "You are now following this request.  You will receive an email when it is implemented.")
         else:
             messages.add_message(request, messages.INFO, "You are already following this request.")
+        return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
+    
+    def get(self, request):
         return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
     
     def get_subscriptions(self, request):

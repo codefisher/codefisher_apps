@@ -14,7 +14,7 @@ from django.contrib import messages
 # we use the same fields so this works
 from djangopress.forum.views import check_askmet_spam
 
-from upvotes.views import MakeRequest, RequestList, RequestView, RequestVote, RequestVoteAjax, RequestFollow
+from upvotes.views import MakeRequest, RequestList, RequestView, RequestVote, RequestFollow
 from upvotes.forms import get_request_form, get_anon_request_form, get_request_comment_form, get_anon_request_comment_form
 
 IconRequestForm = get_request_form(IconRequest, ('concept_icon', ))
@@ -92,18 +92,12 @@ class IconRequestView(RequestView):
     request_url = 'pastel-svg-request'
     comment_form = IconRequestCommentForm
     comment_anonymous_form = IconRequestCommentAnonymousForm
-
-class IconVote(object):
+   
+class IconRequestVote(RequestVote):
     request_class = IconRequest
     session_id = 'pastel-svg-voted-%s'
     request_url = 'pastel-svg-request'
     duplicate_vote_message = "You can not up vote an icon request multiple times."
-    
-class IconRequestVote(IconVote, RequestVote):
-    pass
-
-class IconRequestVoteAjax(IconVote, RequestVoteAjax):
-    pass
 
 class IconRequestFollow(RequestFollow):
     request_class = IconRequest
