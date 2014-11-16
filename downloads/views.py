@@ -5,7 +5,7 @@ from django.core.exceptions import MultipleObjectsReturned
 
 def release_notes(request, path, version,
         template_name="downloads/release_notes.html"):
-    folder = DownloadGroup.objects.filter(path=path.strip('/'), sites__id__exact=settings.SITE_ID)
+    folder = DownloadGroup.objects.filter(version_path=path.strip('/'), sites__id__exact=settings.SITE_ID)
     if not folder.exists():
         raise Http404
     else:
