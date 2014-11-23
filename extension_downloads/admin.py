@@ -5,6 +5,10 @@ from django.contrib import admin
 from django import forms
 from models import ExtensionDownload, Compatibility
 
+class CompatibilityAdmin(admin.ModelAdmin):
+    list_display = ('app_id', 'min_version', 'max_version', 'download')
+admin.site.register(Compatibility, CompatibilityAdmin)   
+
 class DownloadForm(forms.ModelForm):
     set_as_latest = forms.BooleanField(required=False)
 
