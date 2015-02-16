@@ -46,7 +46,7 @@
       <td><a rel="nofollow" href="{{ download.get_absolute_url }}">{{ download.file_name }}</a></td>
       <td>{{ download.file_size|filesizeformat }}</td>
       <td>{% if download.release_notes %}<a href="{{ download.get_release_url }}">{{ download.version }}</a> {% else %}{{ download.version }}{% endif %}
-                {% if download == download.group.latest %} <img src="{% get_static_prefix %}images/pastel-svg/16/star.png" alt="latest"> {% endif %}
+                {% if download == download.group.latest %} <img src="{% static "images/pastel-svg/16/star.png" %}" alt="latest"> {% endif %}
                 </td>
       <td>{{ download.release_date|date }}</td>
       <td>{% if download.get_homepage %}<a href="{{ download.get_homepage }}">{{ download.title }}</a>{% endif %}</td>
