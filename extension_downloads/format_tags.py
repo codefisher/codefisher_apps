@@ -1,15 +1,15 @@
 from django.conf import settings
 import djangopress.core.format.nodes as nodes
+from djangopress.core.format import html
 from codefisher_apps.extension_downloads.models import ExtensionDownload
 from codefisher_apps.downloads.models import DownloadGroup
+import lxml
 
 # this variable must be exposed, as it is searched for
 library = nodes.Library
+html_library = html.Library
 
-class ExtNode(nodes.TagNode):
-    def __init__(self, token, ext_id):
-        super(ExtNode, self).__init__(token)
-        self.ext_id = ext_id
+class ExtMixin(object):
 
     def get_extension(self):
         try:
@@ -21,6 +21,42 @@ class ExtNode(nodes.TagNode):
         except ExtensionDownload.DoesNotExist:
             return None
         return extension
+
+class HtmlExtNode(ExtMixin):
+    def __init__(self, ext_id):
+        self.ext_id = ext_id
+
+def ext_location(node):
+    extnode = HtmlExtNode(node.attrib.get('id'))
+    extension = extnode.get_extension()
+    if not extension:
+        return None
+    link = lxml.etree.Element("a")
+    link.text = node.text
+    if node.attrib.get('download') == 'true':
+        link.attrib["download"] = extension.file_name
+        link.attrib["href"] = "%s?download=true" % extension.get_absolute_url()
+    else:
+        link.attrib["href"] = extension.get_absolute_url()
+    return link
+
+html_library.tag('//extlocation', ext_location)
+
+def ext_version(node):
+    node = HtmlExtNode(node.attrib.get('id'))
+    extension = node.get_extension()
+    if not extension:
+        return None
+    span = lxml.etree.Element("span")
+    span.text = extension.version
+    return span
+
+html_library.tag('//extversion', ext_version)
+
+class ExtNode(nodes.TagNode, ExtMixin):
+    def __init__(self, token, ext_id):
+        super(ExtNode, self).__init__(token)
+        self.ext_id = ext_id
 
 class ExtInfoNode(ExtNode):
 
