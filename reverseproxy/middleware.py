@@ -4,7 +4,7 @@ from django.conf import settings
 from django.http import HttpResponse, Http404, HttpResponsePermanentRedirect
 from django.shortcuts import render
 from djangopress.core.util import get_client_ip
-from models import ProxyPage
+from .models import ProxyPage
 
 class ProxyMiddleware(object):
     """This is for checking the old site, so to load pages from there """

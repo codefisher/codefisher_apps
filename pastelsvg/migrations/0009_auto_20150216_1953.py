@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='protecteddownload',
             name='file',
-            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(base_url=b'/protected/', location=b'/home/michael/WebSites/dev/git/codefisher_org/codefisher_site/../www/protected'), upload_to=codefisher_apps.pastelsvg.models.upload_path),
+            field=models.FileField(storage=django.core.files.storage.FileSystemStorage(base_url='/protected/', location='/home/michael/WebSites/dev/git/codefisher_org/codefisher_site/../www/protected'), upload_to=codefisher_apps.pastelsvg.models.upload_path),
         ),
     ]

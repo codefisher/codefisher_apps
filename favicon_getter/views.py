@@ -1,6 +1,11 @@
-import urllib2
-import urlparse
-import HTMLParser
+try:
+    from urllib2 import urlopen
+    import urlparse
+    from HTMLParser import HTMLParser
+except ImportError:
+    from urllib.request import urlopen
+    import urllib.parse as urlparse
+    from html.parser import HTMLParser
 import io
 import operator
 import subprocess
@@ -13,12 +18,11 @@ from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.http import HttpResponse
 
 from PIL import Image
-import Win32IconImagePlugin
 
-class FavIconParser(HTMLParser.HTMLParser):
+class FavIconParser(HTMLParser):
 
     def __init__(self, url):
-        HTMLParser.HTMLParser.__init__(self)
+        HTMLParser.__init__(self)
         self._icons = []
         self._url = url
 
@@ -35,7 +39,7 @@ class FavIconParser(HTMLParser.HTMLParser):
 
 def get_favicon_url(url):
     try:
-        data = urllib2.urlopen(url).read()
+        data = urlopen(url).read()
     except IOError:
         return None
     try:
@@ -68,7 +72,7 @@ def get_favicon_as_images(url=None, favicon_url=None):
     try:
         if not favicon_url:
             favicon_url = get_favicon_url(url)
-        fav = urllib2.urlopen(favicon_url, timeout=10)
+        fav = urlopen(favicon_url, timeout=10)
         icon_fp = io.BytesIO(fav.read())
         fav.close()
         icons = file_to_images(icon_fp)

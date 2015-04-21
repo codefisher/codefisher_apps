@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from models import DownloadGroup, Download
+from .models import DownloadGroup, Download
 
 class DownloadForm(forms.ModelForm):
     set_as_latest = forms.BooleanField(required=False)

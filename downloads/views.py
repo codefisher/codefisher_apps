@@ -1,4 +1,4 @@
-from models import DownloadGroup, Download
+from .models import DownloadGroup, Download
 from django.shortcuts import Http404, render, redirect, get_object_or_404
 from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned

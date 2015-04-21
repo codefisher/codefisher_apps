@@ -10,7 +10,10 @@ from django.utils.encoding import force_unicode
 from django.conf import settings
 
 import re
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 from scrapy.http import Request, HtmlResponse
 from scrapy.selector import Selector
 from collections import defaultdict

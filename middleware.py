@@ -2,7 +2,8 @@ import zlib
 from django.middleware.cache import UpdateCacheMiddleware
 from django.utils.cache import patch_response_headers, get_max_age, has_vary_header
 from django.core.cache import cache
-    
+import collections
+
 class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
     """
     Response-phase cache middleware that updates the cache if the response is
@@ -42,7 +43,7 @@ class UpdateCacheMiddlewareSimpleKey(UpdateCacheMiddleware):
         if timeout:
             cache_key = "%s-%s" % (self.key_prefix, request.get_full_path())
             #raise ValueError(cache_key)
-            if hasattr(response, 'render') and callable(response.render):
+            if hasattr(response, 'render') and isinstance(response.render, collections.Callable):
                 response.add_post_render_callback(
                     lambda r: cache._cache.set(cache_key.encode("utf-8"), zlib.compress(r.content, 9), timeout)
                 )

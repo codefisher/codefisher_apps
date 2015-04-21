@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group
 from django.core.files.storage import FileSystemStorage
 from paypal.standard.ipn.signals import payment_was_successful
 from paypal.standard.ipn.models import PayPalIPN
-from djangopress.core.format import format_markdown
+from djangopress.core.format.library import format_markdown
 from upvotes.models import AbstractRequest, AbstractRequestComment
 
 DEFAULT_PROTECTED_ROOT = os.path.join(settings.BASE_DIR, '..', 'www', 'protected')

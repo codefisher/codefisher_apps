@@ -1,5 +1,5 @@
 from django.contrib import admin
-from models import ProxyPage
+from .models import ProxyPage
 
 class ProxyPageAdmin(admin.ModelAdmin):
     list_display = ('path', 'proxy')
