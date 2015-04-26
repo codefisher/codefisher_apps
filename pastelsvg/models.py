@@ -102,7 +102,7 @@ class IconRequest(AbstractRequest):
     concept_icon = models.ImageField(blank=True, null=True,
             upload_to="pastelsvg_concept/%y/%m",
             help_text='Another image that indicates the same concept as wanted for this icon.')
-    subscriptions = models.ManyToManyField(User, null=True, blank=True, related_name='icon_request_subscriptions')
+    subscriptions = models.ManyToManyField(User, blank=True, related_name='icon_request_subscriptions')
           
     def get_message(self):
         return format_markdown(self.message)
