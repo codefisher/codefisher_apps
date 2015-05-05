@@ -57,6 +57,8 @@ def update_donation(sender, **kwargs):
     ipn_obj = sender
     if ipn_obj.payment_status == "Completed":
         # Undertake some action depending upon `ipn_obj`.
+        if ipn_obj.mc_gross < 1.0:
+            return
         try:
             donation = PastelSVGDonation.objects.get(invoice_id=ipn_obj.invoice)
         except PastelSVGDonation.DoesNotExist:
