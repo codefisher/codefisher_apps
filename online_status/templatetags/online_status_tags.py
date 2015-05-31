@@ -22,14 +22,14 @@ def online_user_count(limit=None):
 
 def _online_user(limit, logged_only):
     """Renders a list of OnlineStatus instances"""
-    onlineusers = cache.get(CACHE_USERS)
+    onlineusers = cache.get(CACHE_USERS, [])
     onlineanonymusers = []
-    
+
     if not ONLY_LOGGED_USERS and not logged_only:
         now = datetime.datetime.now()
         sessions = Session.objects.filter(expire_date__gte = now + datetime.timedelta(0, settings.SESSION_COOKIE_AGE - TIME_OFFLINE)).values_list('session_key', flat = True)
         onlineanonymusers = [x for x in [cache.get(CACHE_PREFIX_ANONYM_USER % session_key, None) for session_key in sessions] if x is not None]
-        #onlineusers = [item for item in cache.get(CACHE_USERS, []) if item.status in (0, 1) and item.session in sessions]
+        onlineusers = [item for item in cache.get(CACHE_USERS, []) if item.status in (0, 1) and item.session in sessions]
         
         if onlineanonymusers and limit:
             onlineanonymusers = onlineanonymusers[:limit]
