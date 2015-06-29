@@ -4,6 +4,7 @@ from codefisher_apps.pastelsvg.models import Icon, PastelSVGDonation, ProtectedD
 from haystack.query import SearchQuerySet
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import Http404, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from djangopress.donate.views import DonationPayPalPaymentsForm
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -110,7 +111,8 @@ class RequestIconList(RequestList):
     template = 'pastelsvg/request/index.html'
     title = "Pastel SVG Icon Requests"
     request_class = IconRequest
-    
+
+@csrf_exempt
 def donate_thanks(request):
     data = {
         "title": "Thanks for your Donation"
