@@ -159,7 +159,7 @@ class RequestFollow(View):
         return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
     
     def get(self, request):
-        return redirect(reverse(self.request_url, kwargs={'request_id': request_id}))
+        return redirect(reverse(self.request_url))
     
     def get_subscriptions(self, request):
         raise NotImplementedError
