@@ -51,7 +51,10 @@ def refresh_user(request):
         onlinestatus = OnlineStatus(request)        
     else:
         onlinestatus.set_active(request)
-    cache.set(key, onlinestatus, TIME_OFFLINE)
+    try:
+        cache.set(key, onlinestatus, TIME_OFFLINE)
+    except RuntimeError:
+        pass
     return onlinestatus
     #self.refresh_users_list(user=self.user)
     
