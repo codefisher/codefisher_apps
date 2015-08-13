@@ -74,8 +74,9 @@ def refresh_users_list(request, **kwargs):
         elif seconds > TIME_IDLE:
             obj.set_idle()
             user = cache.get(CACHE_PREFIX_USER % obj.user.pk)
-            user.set_idle()
-            cache.set(CACHE_PREFIX_USER % obj.user.pk, user, TIME_OFFLINE)
+            if user:
+                user.set_idle()
+                cache.set(CACHE_PREFIX_USER % obj.user.pk, user, TIME_OFFLINE)
         if obj.user == updated.user and updated.is_authenticated(): #It should never find it if it's an anonymous user, but you never know
             obj.set_active(request)
             obj.seen = datetime.now()    
