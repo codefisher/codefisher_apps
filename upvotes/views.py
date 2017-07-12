@@ -3,7 +3,7 @@ from djangopress.core.util import choose_form, get_client_ip
 from djangopress.forum.views import check_askmet_spam
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.contrib import messages
 from django.db import models

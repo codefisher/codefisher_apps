@@ -1,10 +1,10 @@
 import datetime
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.sites.models import Site
 
 class DownloadGroup(models.Model):
-    parent = models.ForeignKey("DownloadGroup", null=True, blank=True)
+    parent = models.ForeignKey("DownloadGroup", null=True, blank=True, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
     path = models.CharField(max_length=200, db_index=True,
@@ -52,7 +52,7 @@ def upload_path(instance, filename):
     return ("%s%s" % (instance.group.get_absolute_url(), filename))[1:]
 
 class Download(models.Model):
-    group = models.ForeignKey("DownloadGroup")
+    group = models.ForeignKey("DownloadGroup", on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     file = models.FileField(upload_to=upload_path)
     file_name = models.CharField(max_length=100)
@@ -62,7 +62,7 @@ class Download(models.Model):
     description = models.TextField(null=True, blank=True)
     release_notes = models.TextField(null=True, blank=True)
     homepage = models.CharField(max_length=100, null=True, blank=True)
-    previous_release = models.ForeignKey("Download", null=True, blank=True)
+    previous_release = models.ForeignKey("Download", null=True, blank=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "%s %s" % (self.title, self.version)

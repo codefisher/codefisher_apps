@@ -5,7 +5,7 @@ settings.USERS_ONLINE__TIME_OFFLINE = 6
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
 from django.utils import simplejson

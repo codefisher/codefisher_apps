@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from codefisher_apps.pastelsvg import views
 from upvotes import views as upvotes_views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', views.index, name='pastel-svg-index'),
     url(r'^icon/(?P<file_name>.+)/$', views.icon, name='pastel-svg-icon'),
     url(r'^icon/$', views.list_icons, name='pastel-svg-icon'),
@@ -23,12 +23,12 @@ urlpatterns = patterns('',
     url(r'^donate/thanks/$', views.donate_thanks, name='pastel-svg-donate-thanks'),
     url(r'^who_uses/$', views.who_uses, name='pastel-svg-who-uses'),
     url(r'^who_uses/(?P<page>\d+)/$', views.who_uses, name='pastel-svg-who-uses'),
-)
+]
 
 try:
     from djangopress.core.search import ModelSetSearchForm, ModelSetSearchView, search_view_factory
 
-    urlpatterns += patterns('',
+    urlpatterns += [
         # the haystack search
         url(r'^search/', search_view_factory(
                 view_class=ModelSetSearchView,
@@ -37,6 +37,6 @@ try:
                 template='pastelsvg/search.html',
                 models=["pastelsvg.icon"],
             ), name='haystack-pastelsvg-search'),
-    )
+    ]
 except ImportError:
     pass

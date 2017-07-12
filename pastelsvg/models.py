@@ -2,10 +2,10 @@ import os
 from django.db import models
 from django.utils.text import slugify
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.models import User, Group
 from django.core.files.storage import FileSystemStorage
-from paypal.standard.ipn.signals import payment_was_successful
+from paypal.standard.ipn.signals import valid_ipn_received
 from paypal.standard.ipn.models import PayPalIPN
 from djangopress.core.format.library import format_markdown
 from upvotes.models import AbstractRequest, AbstractRequestComment
@@ -43,12 +43,12 @@ class ProtectedDownload(models.Model):
         return reverse('pastel-svg-download-file', kwargs={"file": self.pk, 'file_name': self.file_name})
 
 class PastelSVGDonation(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     amount = models.DecimalField(blank=True, default=0, max_digits=6, decimal_places=2)
     validated = models.BooleanField(default=False)
     invoice_id = models.CharField(max_length=50, null=True, blank=True)
-    payment = models.ForeignKey(PayPalIPN, null=True, blank=True)
+    payment = models.ForeignKey(PayPalIPN, null=True, blank=True, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return "%s %s" % (self.user.username, self.amount)
@@ -71,7 +71,7 @@ def update_donation(sender, **kwargs):
             donation.user.groups.add(Group.objects.get(name="PastelSVG"))
     else:
         pass # not a good payment
-payment_was_successful.connect(update_donation)
+valid_ipn_received.connect(update_donation)
 
 class Icon(models.Model):
     title = models.CharField(max_length=200)
@@ -120,7 +120,7 @@ class IconRequest(AbstractRequest):
         return IconRequestComment.objects.filter(request=self, is_public=True, is_spam=False)
        
 class IconRequestComment(AbstractRequestComment):
-    request = models.ForeignKey(IconRequest, related_name='comments')
+    request = models.ForeignKey(IconRequest, related_name='comments', on_delete=models.CASCADE)
    
 class UseExample(models.Model):
     title = models.CharField(max_length=200)
@@ -134,7 +134,7 @@ class UseExample(models.Model):
     poster_name = models.CharField(blank=True, null=True, max_length=50)
     poster_email = models.EmailField(blank=True, null=True)
     
-    poster = models.ForeignKey(User, blank=True, null=True)
+    poster = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     
     def __unicode__(self):
         return self.title

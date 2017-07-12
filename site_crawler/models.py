@@ -20,7 +20,7 @@ class CrawledPage(models.Model):
     size =  models.IntegerField()
     status = models.IntegerField()
     parents = models.TextField(blank=True, null=True)
-    process = models.ForeignKey(CrawlProcess)
+    process = models.ForeignKey(CrawlProcess, on_delete=models.CASCADE)
     
     def __unicode__(self):
         return self.url
@@ -31,7 +31,7 @@ class SpelledPage(models.Model):
     title = models.CharField(max_length=200, blank=True, null=True)
     size =  models.IntegerField()
     results = models.TextField(blank=True, null=True)
-    process = models.ForeignKey(CrawlProcess)
+    process = models.ForeignKey(CrawlProcess, on_delete=models.CASCADE)
     
     def __unicode__(self):
         return self.url

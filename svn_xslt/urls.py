@@ -1,6 +1,6 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from codefisher_apps.svn_xslt import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^style.xslt$', views.xslt),
-)
+]

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='crawledpage',
             name='process',
-            field=models.ForeignKey(default=None, to='site_crawler.CrawlProcess'),
+            field=models.ForeignKey(default=None, to='site_crawler.CrawlProcess', on_delete=models.CASCADE),
             preserve_default=False,
         ),
         migrations.AddField(

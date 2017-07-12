@@ -16,7 +16,7 @@ class AbstractRequest(models.Model):
     poster_name = models.CharField(blank=True, null=True, max_length=50)
     poster_email = models.EmailField(blank=True, null=True)
     
-    poster = models.ForeignKey(User, blank=True, null=True)
+    poster = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     ip = models.GenericIPAddressField()
     
     closed = models.BooleanField(default=False)
@@ -47,7 +47,7 @@ class AbstractRequestComment(models.Model):
     poster_name = models.CharField(blank=True, null=True, max_length=50)
     poster_email = models.EmailField(blank=True, null=True)
     
-    poster = models.ForeignKey(User, blank=True, null=True)
+    poster = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     
     ip = models.GenericIPAddressField()
     

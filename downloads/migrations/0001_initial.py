@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('homepage', models.URLField(max_length=255, null=True, blank=True)),
                 ('identifier', models.CharField(max_length=50, null=True, blank=True)),
                 ('latest', models.ForeignKey(on_delete=django.db.models.deletion.SET_NULL, blank=True, to='downloads.Download', null=True)),
-                ('parent', models.ForeignKey(blank=True, to='downloads.DownloadGroup', null=True)),
+                ('parent', models.ForeignKey(blank=True, to='downloads.DownloadGroup', null=True, on_delete=models.CASCADE)),
                 ('sites', models.ManyToManyField(to='sites.Site')),
             ],
             options={
@@ -56,13 +56,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='download',
             name='group',
-            field=models.ForeignKey(to='downloads.DownloadGroup'),
+            field=models.ForeignKey(to='downloads.DownloadGroup', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='download',
             name='previous_release',
-            field=models.ForeignKey(blank=True, to='downloads.Download', null=True),
+            field=models.ForeignKey(blank=True, to='downloads.Download', null=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

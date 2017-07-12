@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('close_reason', models.CharField(max_length=200)),
                 ('is_public', models.BooleanField(default=True, help_text=b'Uncheck this box to make the post effectively disappear from the site.', verbose_name=b'is public')),
                 ('is_spam', models.BooleanField(default=False, help_text=b'Check this box to flag as spam.', verbose_name=b'is spam')),
-                ('poster', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('poster', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                 ('ip', models.GenericIPAddressField()),
                 ('is_public', models.BooleanField(default=True, help_text=b'Uncheck this box to make the post effectively disappear from the site.', verbose_name=b'is public')),
                 ('is_spam', models.BooleanField(default=False, help_text=b'Check this box to flag as spam.', verbose_name=b'is spam')),
-                ('poster', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('poster', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -74,8 +74,8 @@ class Migration(migrations.Migration):
                 ('amount', models.DecimalField(default=0, max_digits=6, decimal_places=2, blank=True)),
                 ('validated', models.BooleanField(default=False)),
                 ('invoice_id', models.CharField(max_length=50, null=True, blank=True)),
-                ('payment', models.ForeignKey(blank=True, to='ipn.PayPalIPN', null=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('payment', models.ForeignKey(blank=True, to='ipn.PayPalIPN', null=True, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
                 ('validated', models.BooleanField(default=False)),
                 ('poster_name', models.CharField(max_length=50, null=True, blank=True)),
                 ('poster_email', models.EmailField(max_length=75, null=True, blank=True)),
-                ('poster', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('poster', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
             },

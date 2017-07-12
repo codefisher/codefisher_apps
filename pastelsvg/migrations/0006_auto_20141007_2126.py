@@ -32,6 +32,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='iconrequestcomment',
             name='request',
-            field=models.ForeignKey(related_name=b'comments', to='pastelsvg.IconRequest'),
+            field=models.ForeignKey(related_name=b'comments', to='pastelsvg.IconRequest', on_delete=models.CASCADE),
         ),
     ]

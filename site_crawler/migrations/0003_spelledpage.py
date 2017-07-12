@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=200, null=True, blank=True)),
                 ('size', models.IntegerField()),
                 ('results', models.TextField(null=True, blank=True)),
-                ('process', models.ForeignKey(to='site_crawler.CrawlProcess')),
+                ('process', models.ForeignKey(to='site_crawler.CrawlProcess', on_delete=models.CASCADE)),
             ],
             options={
             },

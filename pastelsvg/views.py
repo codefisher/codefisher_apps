@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from djangopress.donate.views import DonationPayPalPaymentsForm
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from djangopress.core.util import has_permission, get_client_ip, choose_form
 from codefisher_apps.downloads.models import Download, DownloadGroup

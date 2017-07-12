@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ExtensionDownload',
             fields=[
-                ('download_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='downloads.Download')),
+                ('download_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='downloads.Download', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='compatibility',
             name='download',
-            field=models.ForeignKey(related_name=b'compatibility', to='extension_downloads.ExtensionDownload'),
+            field=models.ForeignKey(related_name=b'compatibility', to='extension_downloads.ExtensionDownload', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

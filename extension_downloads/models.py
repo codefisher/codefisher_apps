@@ -6,7 +6,7 @@ class Compatibility(models.Model):
     app_id = models.CharField(max_length=50)
     min_version = models.CharField(max_length=15)
     max_version = models.CharField(max_length=15)
-    download = models.ForeignKey("ExtensionDownload", related_name="compatibility")
+    download = models.ForeignKey("ExtensionDownload", related_name="compatibility", on_delete=models.CASCADE)
 
     def __unicode__(self):
         if hasattr(settings, "MOZ_APP_NAMES") and self.app_id in settings.MOZ_APP_NAMES:

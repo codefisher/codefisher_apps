@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('path', models.CharField(max_length=200, db_index=True)),
                 ('proxy', models.CharField(max_length=200)),
-                ('site', models.ForeignKey(to='sites.Site')),
+                ('site', models.ForeignKey(to='sites.Site', on_delete=models.CASCADE)),
             ],
             options={
             },
