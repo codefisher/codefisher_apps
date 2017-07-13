@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.conf import settings
 from codefisher_apps.pastelsvg import views
 from upvotes import views as upvotes_views
 
@@ -26,17 +27,18 @@ urlpatterns = [
 ]
 
 try:
-    from djangopress.core.search import ModelSetSearchForm, ModelSetSearchView, search_view_factory
+    if 'haystack' in settings.INSTALLED_APPS:
+        from djangopress.core.search import ModelSetSearchForm, ModelSetSearchView, search_view_factory
 
-    urlpatterns += [
-        # the haystack search
-        url(r'^search/', search_view_factory(
-                view_class=ModelSetSearchView,
-                form_class=ModelSetSearchForm,
-                results_per_page=20,
-                template='pastelsvg/search.html',
-                models=["pastelsvg.icon"],
-            ), name='haystack-pastelsvg-search'),
-    ]
+        urlpatterns += [
+            # the haystack search
+            url(r'^search/', search_view_factory(
+                    view_class=ModelSetSearchView,
+                    form_class=ModelSetSearchForm,
+                    results_per_page=20,
+                    template='pastelsvg/search.html',
+                    models=["pastelsvg.icon"],
+                ), name='haystack-pastelsvg-search'),
+        ]
 except ImportError:
     pass
