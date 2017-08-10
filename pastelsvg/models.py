@@ -36,7 +36,7 @@ class ProtectedDownload(models.Model):
     description = models.TextField(null=True, blank=True)
     public = models.BooleanField(default=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.file_name
     
     def get_absolute_url(self):
@@ -50,7 +50,7 @@ class PastelSVGDonation(models.Model):
     invoice_id = models.CharField(max_length=50, null=True, blank=True)
     payment = models.ForeignKey(PayPalIPN, null=True, blank=True, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s %s" % (self.user.username, self.amount)
     
 def update_donation(sender, **kwargs):
@@ -80,7 +80,7 @@ class Icon(models.Model):
     file_name = models.CharField(max_length=200, unique=True)
     date_modified = models.DateTimeField()
     
-    def __unicode__(self):
+    def __str__(self):
         return self.title
     
     def key_words(self):
@@ -136,7 +136,7 @@ class UseExample(models.Model):
     
     poster = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.title
     
     def get_description(self):
