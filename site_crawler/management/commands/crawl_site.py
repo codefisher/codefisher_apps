@@ -6,7 +6,7 @@ from twisted.internet import reactor
 from scrapy.crawler import Crawler
 from scrapy.settings import Settings
 from scrapy import log, signals
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.conf import settings
 
 import re
@@ -144,7 +144,7 @@ class SiteSpellerSpider(BaseSiteSpider):
     def _get_item(self, response):
         try:
             word_dict = DictWithPWL(settings.SITE_CRAWLER_DICT_LANG, settings.SITE_CRAWLER_DICT_PWL)
-            spell_checker = SpellChecker(word_dict, re.sub(r'\s+', ' ', stripped_html(force_unicode(response.body), ids=REMOVE_IDS)), filters=(EmailFilter, URLFilter))
+            spell_checker = SpellChecker(word_dict, re.sub(r'\s+', ' ', stripped_html(force_text(response.body), ids=REMOVE_IDS)), filters=(EmailFilter, URLFilter))
             results = "\n".join(set(x.word for x in spell_checker))
         except DjangoUnicodeDecodeError:
             results = "" # might happen with binary file, or something really messed up

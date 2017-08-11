@@ -11,7 +11,7 @@ class CrawlProcess(models.Model):
     crawler = models.CharField(max_length=50, choices=CRAWLERS)
     deny = models.TextField(blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class CrawledPage(models.Model):
@@ -22,7 +22,7 @@ class CrawledPage(models.Model):
     parents = models.TextField(blank=True, null=True)
     process = models.ForeignKey(CrawlProcess, on_delete=models.CASCADE)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.url
 
 class SpelledPage(models.Model):
@@ -33,5 +33,5 @@ class SpelledPage(models.Model):
     results = models.TextField(blank=True, null=True)
     process = models.ForeignKey(CrawlProcess, on_delete=models.CASCADE)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.url
