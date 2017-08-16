@@ -1,15 +1,14 @@
 try:
-    from urllib2 import urlopen
     import urlparse
     from HTMLParser import HTMLParser
 except ImportError:
-    from urllib.request import urlopen
     import urllib.parse as urlparse
     from html.parser import HTMLParser
 import io
 import operator
 import subprocess
 import base64
+import requests
 
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -39,14 +38,14 @@ class FavIconParser(HTMLParser):
 
 def get_favicon_url(url):
     try:
-        data = urlopen(url).read()
+        data = requests.get(url).text
     except IOError:
         return None
     try:
         parser = FavIconParser(url)
         parser.feed(data)
         parser.close()
-    except HTMLParser.HTMLParseError:
+    except:
         return None
     icon_url = parser.get_icon()
     if not icon_url:
@@ -72,8 +71,8 @@ def get_favicon_as_images(url=None, favicon_url=None):
     try:
         if not favicon_url:
             favicon_url = get_favicon_url(url)
-        fav = urlopen(favicon_url, timeout=10)
-        icon_fp = io.BytesIO(fav.read())
+        fav = requests.get(favicon_url, timeout=10)
+        icon_fp = io.BytesIO(fav.content)
         fav.close()
         icons = file_to_images(icon_fp)
         #icon_fp.close() # we get errors latter if we close this now
