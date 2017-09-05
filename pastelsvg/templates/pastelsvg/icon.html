@@ -24,6 +24,7 @@
 </p>
 </div>
 
+{% if searchqueryset %}
 <h2>Similar Icons</h2>
 
 <table>
@@ -42,4 +43,5 @@
 	{% endif %}
 {% endfor %}
 </table>
+{% endif %}
 {% endblock %}

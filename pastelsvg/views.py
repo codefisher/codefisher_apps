@@ -207,10 +207,17 @@ def list_icons(request, page=1):
 
 def icon(request, file_name):
     icon_obj = get_object_or_404(Icon, file_name=file_name)
-    searchqueryset = SearchQuerySet().auto_query(icon_obj.description).models(Icon)
-    data = {
-        "title": icon_obj.title,
-        "icon": icon_obj,
-        "searchqueryset": searchqueryset,
-    }
-    return render(request, 'pastelsvg/icon.html' , data)
+    try:
+        searchqueryset = SearchQuerySet().auto_query(icon_obj.description).models(Icon)
+        data = {
+            "title": icon_obj.title,
+            "icon": icon_obj,
+            "searchqueryset": searchqueryset,
+        }
+        return render(request, 'pastelsvg/icon.html' , data)
+    except Exception as e:
+        data = {
+            "title": icon_obj.title,
+            "icon": icon_obj,
+        }
+        return render(request, 'pastelsvg/icon.html' , data)
